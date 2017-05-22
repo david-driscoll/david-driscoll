@@ -10,7 +10,10 @@ Task("Build")
         {
             Recipe = "Blog",
             Theme = "CleanBlog",
-            UpdatePackages = true
+            UpdatePackages = true,
+            Settings  = new Dictionary<string, object>() {
+                { "Drafts", false }
+            }
         });
     });
 
@@ -23,7 +26,10 @@ Task("Preview")
             Theme = "CleanBlog",
             UpdatePackages = true,
             Preview = true,
-            Watch = true
+            Watch = true,
+            Settings  = new Dictionary<string, object>() {
+                { "Drafts", true }
+            }
         });
     });
 

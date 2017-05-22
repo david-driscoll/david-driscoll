@@ -27,7 +27,6 @@ Settings[BlogKeys.NetlifyRedirects] = true;
 // Settings[BlogKeys.ValidateRelativeLinks] = ;
 // Settings[BlogKeys.ValidateLinksAsError] = ;
 
-
 FileSystem.InputPaths.AddRange(new DirectoryPath[] { "src" });
 
 // Use deep wild cards for posts
@@ -55,6 +54,20 @@ list.Remove(list.First());
 list.Insert(0,
     new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/**,!tags,**}}/{{!_,}}*.cshtml")
 );
+
+// draft support
+if (!Settings.Get<bool>("Drafts")) {
+    var p = Blog.BlogPosts[BlogKeys.Published] as ModuleCollection;
+    if (p[0].GetType() == typeof(Where)) p.RemoveAt(0);
+    p.Insert(0, new Where((doc, ctx) =>
+    {
+        if (doc.Get<bool>("Draft"))
+        {
+            return false;
+        }
+        return true;
+    }));
+}
 
 // Folder in posts
 if (Blog.BlogPosts.Contains("YearPath")) Blog.BlogPosts.Remove("YearPath");
