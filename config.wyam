@@ -1,6 +1,16 @@
 #recipe Blog
 #theme CleanBlog
-using Wyam.Blog.Pipelines;
+using Wyam.Web.Pipelines;
+
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Wyam.Common.Configuration;
+using Wyam.Common.Documents;
+using Wyam.Common.Modules;
+using Wyam.Common.Execution;
+using Wyam.Common.Util;
 
 Settings[BlogKeys.Title ] = "David Driscoll";
 // Settings[BlogKeys.Image] = "";
@@ -8,7 +18,7 @@ Settings[BlogKeys.Title ] = "David Driscoll";
 Settings[BlogKeys.Description] = "Personal blog for David Driscoll";
 Settings[BlogKeys.Intro] = "export type Blog = 'typescript' & '.net' & 'more'";
 Settings[BlogKeys.CaseInsensitiveTags] = true;
-Settings[BlogKeys.MarkdownExtensions] = "advanced+bootstrap+emojis";
+Settings[BlogKeys.MarkdownConfiguration] = "advanced+bootstrap+emojis";
 Settings[BlogKeys.IncludeDateInPostPath] = true;
 Settings[BlogKeys.MetaRefreshRedirects] = true;
 Settings[BlogKeys.NetlifyRedirects] = true;
@@ -21,13 +31,13 @@ Settings[BlogKeys.NetlifyRedirects] = true;
 FileSystem.InputPaths.AddRange(new DirectoryPath[] { "src" });
 
 // Use deep wild cards for posts
-var list = ((IModuleList)Blog.RawPosts[RawPosts.MarkdownPosts]);
+var list = ((IModuleList)Blog.BlogPosts[BlogPosts.MarkdownPosts]);
 list.Remove(list.First());
 list.Insert(0,
     new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/**/*.md")
 );
 
-list = ((IModuleList)Blog.RawPosts[RawPosts.RazorPosts]);
+list = ((IModuleList)Blog.BlogPosts[BlogPosts.RazorPosts]);
 list.Remove(list.First());
 list.Insert(0,
     new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{{!_,!index,}}**/*.cshtml")
@@ -46,9 +56,9 @@ list.Insert(0,
     new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/**,!tags,**}}/{{!_,}}*.cshtml")
 );
 
-// Folder in posts is a topic
-if (Blog.RawPosts.Contains("TopicPath")) Blog.RawPosts.Remove("TopicPath");
-Blog.RawPosts.Add("TopicPath", new Meta(Keys.RelativeFilePath, (doc, ctx) =>
+// Folder in posts
+if (Blog.BlogPosts.Contains("YearPath")) Blog.BlogPosts.Remove("YearPath");
+Blog.BlogPosts.Add("YearPath", new Meta(Keys.RelativeFilePath, (doc, ctx) =>
 {
     var published = doc.Get<DateTime>(BlogKeys.Published);
     var fileName = doc.Bool("FrontMatterPublished")
@@ -57,9 +67,9 @@ Blog.RawPosts.Add("TopicPath", new Meta(Keys.RelativeFilePath, (doc, ctx) =>
     var fileFolder = doc.DirectoryPath(Keys.RelativeFileDir).FullPath;
     var folder = ctx.DirectoryPath(BlogKeys.PostsPath).FullPath;
     if (fileFolder.Length > folder.Length) {
-        var topic = fileFolder.Substring(folder.Length).Trim('/', '\\');
-        if (topic.Length > 0) {
-            fileName = $"{topic}/{fileName}";
+        var year = fileFolder.Substring(folder.Length).Trim('/', '\\');
+        if (year.Length > 0) {
+            fileName = fileName.Substring(year.Length + 1);
         }
     }
 
@@ -68,21 +78,84 @@ Blog.RawPosts.Add("TopicPath", new Meta(Keys.RelativeFilePath, (doc, ctx) =>
         : $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{fileName}";
 }));
 
-// Tag of topic folder
-if (Blog.RawPosts.Contains("TopicTags")) Blog.RawPosts.Remove("TopicTags");
-Blog.RawPosts.Add("TopicTags", new Meta(BlogKeys.Tags, (doc, ctx) =>
+public class SeriesItem
 {
-    var published = doc.Get<DateTime>(BlogKeys.Published);
-    var fileName = doc.Bool("FrontMatterPublished")
-                        ? doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath
-                        : doc.FilePath(Keys.SourceFileName).ChangeExtension("html").FullPath.Substring(11);
-    var fileFolder = doc.DirectoryPath(Keys.RelativeFileDir).FullPath;
-    var folder = ctx.DirectoryPath(BlogKeys.PostsPath).FullPath;
-    var tags = doc.Get<string[]>(BlogKeys.Tags) ?? new string[0];
-    if (fileFolder.Length > folder.Length) {
-        var topic = fileFolder.Substring(folder.Length).Trim('/', '\\');
-        return tags.Concat(new [] { topic }).ToArray();
-    }
+    public SeriesItem(IDocument self, int index, IDocument[] documents)
+    {
+        var defaultTitle = documents
+            .Select(x => x.Get<string>(Series.SeriesTitle))
+            .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+        var defaultDescription = documents
+            .Select(x => x.Get<string>(Series.SeriesDescription))
+            .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
 
-    return tags;
-}));
+        Key = self.Get<string>(nameof(Series));
+        Title = self.Get<string>(Series.SeriesTitle) ?? defaultTitle;
+        Description = self.Get<string>(Series.SeriesDescription) ?? defaultDescription;
+        Documents = documents;
+
+        var firstInSeries = documents.FirstOrDefault();
+        var prevInSeries = index == 0 ? null : documents.Skip(index - 1).FirstOrDefault();
+        var nextInSeries = documents.Skip(index + 1).FirstOrDefault();
+        var lastInSeries = documents.LastOrDefault();
+
+        if (firstInSeries != self) FirstInSeries = firstInSeries;
+        if (firstInSeries != null && prevInSeries != null && firstInSeries != prevInSeries) PrevInSeries = prevInSeries;
+        if (lastInSeries != null && nextInSeries != null && lastInSeries != nextInSeries) NextInSeries = nextInSeries;
+        if (lastInSeries != self) LastInSeries = lastInSeries;
+    }
+    public string Key { get; }
+    public string Title { get; }
+    public string Description { get; }
+    public IDocument[] Documents { get; }
+    public IDocument FirstInSeries { get; }
+    public IDocument PrevInSeries { get; }
+    public IDocument NextInSeries { get; }
+    public IDocument LastInSeries { get; }
+}
+
+public class Series : IModule
+{
+    public static string SeriesTitle = nameof(SeriesTitle);
+    public static string SeriesDescription = nameof(SeriesDescription);
+
+    private readonly Dictionary<string, HashSet<IMetadata>> _series = new Dictionary<string, HashSet<IMetadata>>();
+
+    public IEnumerable<IDocument> Execute(IReadOnlyList<IDocument> inputs, IExecutionContext context)
+    {
+        var metadata = new Dictionary<IDocument, IEnumerable<KeyValuePair<string, object>>>();
+        foreach (var series in inputs
+            .GroupBy(x => x.Get<string>(nameof(Series)), x => x, (key, items) => new { key, items = items.OrderBy(x => x.Get<DateTime>(BlogKeys.Published)).ToArray() })
+            .Where(x => !string.IsNullOrWhiteSpace(x.key)))
+        {
+            var defaultTitle = series.items
+                .Select(x => x.Get<string>(SeriesTitle))
+                .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+            var defaultDescription = series.items
+                .Select(x => x.Get<string>(SeriesDescription))
+                .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+
+            for (var i = 0; i < series.items.Length; i++)
+            {
+                var doc = series.items[i];
+                metadata.Add(doc, new[] {
+                    new KeyValuePair<string, object>(nameof(Series), new SeriesItem(doc, i, series.items))
+                });
+            }
+        }
+
+        return inputs.Select(context, input =>
+        {
+            IEnumerable<KeyValuePair<string, object>> data;
+            if (metadata.TryGetValue(input, out data))
+            {
+                return context.GetDocument(input, data);
+            }
+            return input;
+        });
+    }
+}
+
+if (Blog.BlogPosts.Contains(nameof(Series))) Blog.BlogPosts.Remove(nameof(Series));
+Blog.BlogPosts.Add(nameof(Series), new Series());
+
