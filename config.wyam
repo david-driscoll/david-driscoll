@@ -21,7 +21,7 @@ Settings[BlogKeys.CaseInsensitiveTags] = true;
 Settings[BlogKeys.MarkdownConfiguration] = "advanced+bootstrap+emojis";
 Settings[BlogKeys.IncludeDateInPostPath] = true;
 Settings[BlogKeys.MetaRefreshRedirects] = true;
-Settings[BlogKeys.NetlifyRedirects] = true;
+Settings[BlogKeys.NetlifyRedirects] = false;
 // TODO: Toggle for ci / production builds
 // Settings[BlogKeys.ValidateAbsoluteLinks] = ;
 // Settings[BlogKeys.ValidateRelativeLinks] = ;
@@ -40,19 +40,6 @@ list = ((IModuleList)Blog.BlogPosts[BlogPosts.RazorPosts]);
 list.Remove(list.First());
 list.Insert(0,
     new ReadFiles(ctx => $"{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/{{!_,!index,}}**/*.cshtml")
-);
-
-// Ignore deep wild card posts for pages
-list = ((IModuleList)Blog.Pages[Pages.MarkdownFiles]);
-list.Remove(list.First());
-list.Insert(0,
-    new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/**,**}}*.md")
-);
-
-list = ((IModuleList)Blog.Pages[Pages.RazorFiles]);
-list.Remove(list.First());
-list.Insert(0,
-    new ReadFiles(ctx => $"{{!{ctx.DirectoryPath(BlogKeys.PostsPath).FullPath}/**,!tags,**}}/{{!_,}}*.cshtml")
 );
 
 // draft support
