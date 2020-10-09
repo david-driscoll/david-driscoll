@@ -1,0 +1,38 @@
+{
+  "name": "david-driscoll",
+  "private": true,
+  "scripts": {
+    "build": "gridsome build",
+    "start": "gridsome develop",
+    "explore": "gridsome explore"
+  },
+  "dependencies": {
+    "@gridsome/plugin-sitemap": "^0.4.0",
+    "@gridsome/source-filesystem": "^0.6.2",
+    "@gridsome/transformer-json": "^0.2.1",
+    "@gridsome/transformer-remark": "^0.6.3",
+    "@gridsome/transformer-yaml": "^0.2.1",
+    "@gridsome/vue-remark": "^0.2.5",
+    "@microflash/gridsome-plugin-feed": "^1.1.7",
+    "@noxify/gridsome-plugin-remark-embed": "^1.3.1",
+    "@vue/composition-api": "^1.0.0-beta.15",
+    "gridsome": "^0.7.0",
+    "gridsome-plugin-flexsearch": "^1.0.4",
+    "gridsome-plugin-recommender": "^1.0.7",
+    "gridsome-plugin-remark-shiki": "^0.4.0",
+    "gridsome-plugin-robots-txt": "^1.0.2",
+    "gridsome-remark-figure-caption": "^1.1.3",
+    "slugify": "^1.4.5",
+    "vuetify": "^2.3.13"
+  },
+  "devDependencies": {
+    "@tyankatsu0105/types-gridsome": "^0.6.0",
+    "gridsome-plugin-typescript": "^0.4.0",
+    "sass": "^1.27.0",
+    "sass-loader": "^7.3.1",
+    "ts-loader": "^8.0.4",
+    "typescript": "^4.0.3",
+    "vuetify-loader": "^1.6.0",
+    "webpack-node-externals": "^2.5.2"
+  }
+}
