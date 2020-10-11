@@ -10,7 +10,7 @@ import Vuetify from "vuetify/lib";
 import DefaultLayout from "~/layouts/Default.vue";
 import VueCompositionAPI from '@vue/composition-api'
 import { iconPlugin } from './icons';
-import { faArrowsAltV, faBars, faCaretDown, faCheck, faCheckCircle, faCheckSquare, faChevronDown, faChevronLeft, faChevronRight, faCircle, fad, faDotCircle, faEdit, faExclamation, faExclamationTriangle, faInfoCircle, faMinus, faMinusSquare, faPaperclip, faPlus, faSortUp, faSquare, faStar, faStarHalf, faStepBackward, faStepForward, faSync, faTimes, faTimesCircle } from "@fortawesome/pro-duotone-svg-icons";
+import { faArrowsAltV, faBars, faCaretDown, faCheck, faCheckCircle, faInfoSquare, faInfo, faCheckSquare, faChevronDown, faChevronUp, faChevronLeft, faChevronRight, faCircle, fad, faDotCircle, faEdit, faExclamation, faExclamationTriangle, faInfoCircle, faMinus, faMinusSquare, faPaperclip, faPlus, faSortUp, faSquare, faStar, faStarHalf, faStepBackward, faStepForward, faSync, faTimes, faTimesCircle } from "@fortawesome/pro-duotone-svg-icons";
 import {
   faKeybase,
   faLinkedin,
@@ -74,6 +74,38 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
         file: faPaperclip,
         plus: faPlus,
         minus: faMinus,
+
+        faInfoSquare,
+        faInfo,
+        faCheck,
+        faTimesCircle,
+         faTimes,
+         faCheckCircle,
+         faInfoCircle,
+         faExclamation,
+         faExclamationTriangle,
+         faChevronLeft,
+         faChevronRight,
+         faCheckSquare,
+         faSquare, // note far
+         faMinusSquare,
+         faCircle, // for carousel
+         faSortUp,
+         faChevronDown,
+         faChevronUp,
+         faBars,
+         faCaretDown,
+         faDotCircle,
+         faEdit,
+         faStar,
+         faStarHalf,
+         faSync,
+         faStepBackward,
+         faStepForward,
+         faArrowsAltV,
+         faPaperclip,
+         faPlus,
+         faMinus,
 
         faKeybase,
         faLinkedin,

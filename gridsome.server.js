@@ -52,11 +52,13 @@ function onBlogPost(data) {
  */
 function onSeries(data) {
   data.id = data.fileInfo.name;
+  data.hasPosts = false;
   // console.log(data);
 }
 
 /** @type import('@tyankatsu0105/types-gridsome').Server */
 module.exports = function(api) {
+  const graphql = api.graphql;
   api.loadSource((actions) => {
     // Use the Data Store API here: https://gridsome.org/docs/data-store-api/
     // console.log(
@@ -66,6 +68,28 @@ module.exports = function(api) {
     // console.log(items);
     // const posts = actions.getCollection("BlogPost");
     // posts.addReference("series", "Series");
+
+    const blogs = actions.getCollection("BlogPost");
+    const series = actions.getCollection("Series");
+    for (const item of series.data()) {
+      item.hasPosts = blogs.data().some((z) => z.series === item.id);
+    }
+
+    // actions.addSchemaResolvers({
+    //   Series: {
+    //     hasPosts: {
+    //       type: "Boolean",
+    //       resolve(obj) {
+    //         // const items = actions.getCollection("Series");
+
+    //         // // console.log(Object.keys(items.constructor.prototype));
+    //         // console.log(items.data());
+    //         // blogs.data().some((z) => z.series === obj.id);
+    //         return blogs.data().some((z) => z.series === obj.id);
+    //       },
+    //     },
+    //   },
+    // });
   });
 
   function onCreateNode(data) {
@@ -95,6 +119,13 @@ module.exports = function(api) {
     }
     // console.log(config.plugins);
     // config.plugins.push(new VuetifyLoaderPlugin());
+  });
+
+  api.createPages(({ createPage, graphql }) => {
+    createPage({
+      path: "/series-overview/",
+      component: "./src/templates/series/SeriesOverview.vue",
+    });
   });
 };
 

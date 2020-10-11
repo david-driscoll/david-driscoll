@@ -25,11 +25,11 @@ export function iconPlugin(Vue: VueConstructor, icons: { [K in keyof VuetifyIcon
         };
     }
 
-    const r = /^fa([A-Z])/;
+    const faStart = /^fa([A-Z])/;
     from(Object.entries(iconDescriptions))
-        .pipe(filter(z => r.test(z[0])))
+        .pipe(filter(z => faStart.test(z[0])))
         .forEach(([key, value]) => {
-            let newKey = key.replace(r, '$1');
+            let newKey = key.replace(faStart, '$1');
             newKey = newKey[0].toLowerCase() + newKey.substring(1);
             iconDescriptions[newKey] = value;
         });

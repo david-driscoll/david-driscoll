@@ -6,5 +6,11 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true
-    }
+    },
+    "vetur.grammar.customBlocks": {
+        "page-query": "graphql",
+        "static-query": "graphql"
+    },
+    "vscode-graphql.trace.server": "trace",
+    "vscode-graphql.debug": true
 }
