@@ -1,18 +1,22 @@
 <template>
-  <Layout>
-    <series-card
-      v-for="series in $page.series.edges"
-      :key="series.node.id"
-      :series="series.node"
-      :posts="series.node.belongsTo.edges.map((z) => z.node)"
-    />
-    <Pager :info="$page.series.pageInfo" />
-  </Layout>
+  <v-container>
+    <v-row>
+      <v-col class="flex-shrink-0 flex-grow-1">
+        <series-card
+          v-for="series in $page.series.edges"
+          :key="series.node.id"
+          :series="series.node"
+          :posts="series.node.posts.edges.map((z) => z.node)"
+        />
+        <Pager :info="$page.series.pageInfo" />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <page-query>
 query ($page: Int) {
-  series: allSeries(perPage: 2, page: $page, filter: { hasPosts: { eq:true }}) @paginate {
+  series: allSeries(perPage: 10, page: $page, filter: { hasPosts: { eq: true }}) @paginate {
     totalCount
     pageInfo {
       ...pageInfo
@@ -34,7 +38,7 @@ query ($page: Int) {
             original{name, url}
           }
         }
-        belongsTo(sort: { by:"date", order: ASC }) {
+        posts: belongsTo(sort: { by:"date", order: ASC }) {
           totalCount
           pageInfo { ...pageInfo }
           edges {
@@ -44,6 +48,8 @@ query ($page: Int) {
                 path
                 title
                 date
+                description
+                isFuture
               }
             }
           }
@@ -64,15 +70,16 @@ fragment pageInfo on PageInfo {
 }
 </page-query>
 
-<script>
-import { Pager } from "gridsome";
+<script lang="ts">
+import { DateTime } from "luxon";
 import SeriesCard from "../../components/SeriesCard.vue";
 import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   setup() {
     return {};
   },
-  components: { Pager, SeriesCard },
+
+  components: { SeriesCard },
   metaInfo: {
     title: "Series",
   },

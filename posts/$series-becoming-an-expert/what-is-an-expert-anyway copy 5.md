@@ -1,6 +1,6 @@
 ---
 title: What is an expert anyway?
-date: 2020-08-01
+date: 2020-10-11
 tags:
   - expert
   - imposter

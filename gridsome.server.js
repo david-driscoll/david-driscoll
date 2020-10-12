@@ -4,6 +4,7 @@
 
 const { default: slugify } = require("slugify");
 const nodeExternals = require("webpack-node-externals");
+const { DateTime } = require("luxon");
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
@@ -23,6 +24,9 @@ const nodeExternals = require("webpack-node-externals");
  */
 function onBlogPost(data) {
   data.tags = data.tags ?? [];
+
+  let now = DateTime.utc();
+  data.isFuture = DateTime.fromJSDate(data.date) > now;
 
   var parts = data.internal.origin.split(/[\/|\\]/g);
   var series = parts.filter((part) => part.startsWith("$series"));
@@ -53,6 +57,7 @@ function onBlogPost(data) {
 function onSeries(data) {
   data.id = data.fileInfo.name;
   data.hasPosts = false;
+  data.lastPost = new Date(0);
   // console.log(data);
 }
 
@@ -73,6 +78,15 @@ module.exports = function(api) {
     const series = actions.getCollection("Series");
     for (const item of series.data()) {
       item.hasPosts = blogs.data().some((z) => z.series === item.id);
+      item.lastPost = item.hasPosts
+        ? blogs
+            .data()
+            .filter((z) => z.series === item.id)
+            .reduce(
+              (acc, v) => (acc.date > v.date ? acc.date : v.date),
+              new Date(0)
+            )
+        : null;
     }
 
     // actions.addSchemaResolvers({
@@ -113,7 +127,7 @@ module.exports = function(api) {
     if (isServer) {
       config.externals([
         nodeExternals({
-          whitelist: [/^vuetify/],
+          allowlist: [/^vuetify/],
         }),
       ]);
     }
@@ -123,9 +137,13 @@ module.exports = function(api) {
 
   api.createPages(({ createPage, graphql }) => {
     createPage({
-      path: "/series-overview/",
-      component: "./src/templates/series/SeriesOverview.vue",
+      path: "/series/",
+      component: "./src/templates/series/Summary.vue",
     });
+    // createPage({
+    //   path: "/series/:id",
+    //   component: "./src/templates/series/Index.vue",
+    // });
   });
 };
 

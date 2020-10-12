@@ -48,7 +48,7 @@
     "description": ""
   },
   "transform": {
-    "type": "string | object",
+    "type": "'shrink-#' | 'grow-#' | 'up-#' | 'down-#' | 'right-#' | 'left-#' | 'rotate-#' | 'flip-v' | 'flip-h'",
     "description": ""
   },
   "symbol": {
@@ -63,7 +63,6 @@
     "type": "boolean",
     "description": ""
   },
-
   "value": {
     "type": "string | number",
     "description": ""
@@ -75,5 +74,21 @@
   "position": {
     "type": "'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'",
     "description": ""
+  },
+  "primary-opacity": {
+    "type": "string | number",
+    "description": "duotone only"
+  },
+  "secondary-opacity": {
+    "type": "string | number",
+    "description": "duotone only"
+  },
+  "primary-color": {
+    "type": "string",
+    "description": "duotone only"
+  },
+  "secondary-color": {
+    "type": "string",
+    "description": "duotone only"
   }
 }

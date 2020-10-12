@@ -5,9 +5,16 @@
 // To restart press CTRL + C in terminal and run `gridsome develop`
 const { VuetifyLoaderPlugin } = require("vuetify-loader");
 
+const siteName = "David Driscoll";
+const siteHostname = "www.daviddriscoll.me";
+const siteDescription = "Ramblings and Tribulations of a Software Developer";
+
 /** @type import('@tyankatsu0105/types-gridsome').Config */
 module.exports = {
-  siteName: "David Driscoll",
+  siteName: siteName,
+  siteUrl: "https://" + siteHostname,
+  siteDescription,
+
   configureWebpack: {
     plugins: [new VuetifyLoaderPlugin()],
   },
@@ -18,21 +25,97 @@ module.exports = {
 
     {
       use: "@gridsome/plugin-sitemap",
-      // options: {
-      //   exclude: ['/exclude-me'],
-      //   config: {
-      //     '/articles/*': {
-      //       changefreq: 'weekly',
-      //       priority: 0.5,
-      //       lastmod: '2020-02-19',
-      //     },
-      //     '/about': {
-      //       changefreq: 'monthly',
-      //       priority: 0.7,
-      //       lastmod: '2020-05-12',
-      //     }
-      //   }
-      // }
+      options: {
+        config: {
+          "/blog/*": {
+            changefreq: "weekly",
+            priority: 0.5,
+          },
+        },
+      },
+    },
+
+    {
+      use: "@microflash/gridsome-plugin-feed",
+      options: {
+        // (required) Provide GraphQL collection types
+        contentTypes: ["BlogPost"],
+
+        // (optional) Properties used by feed API
+        // See https://github.com/jpmonette/feed#example for all options
+        feedOptions: {
+          title: siteName + " Blog",
+          description: siteDescription,
+        },
+
+        // Available options with their default values
+
+        // (optional) Options for feed formats
+        // RSS is enabled by default
+        rss: {
+          enabled: true,
+          output: "/feed.xml",
+        },
+        atom: {
+          enabled: true,
+          output: "/feed.atom",
+        },
+        json: {
+          enabled: true,
+          output: "/feed.json",
+        },
+
+        // (optional) number of items to include in a feed
+        maxItems: 100,
+
+        // (optional) an array of properties to be parsed as HTML
+        // Converts relative URLs to absolute URLs
+        // You can disable this by omitting the option
+        htmlFields: ["content"],
+
+        // (optional) appends a trailing slash to the URLs
+        enforceTrailingSlashes: false,
+
+        // (optional) a function to filter out the nodes
+        // e.g., filter out all outdated posts, filterNodes: (node) => !!node.outdated
+        filterNodes: (node) => true,
+
+        // (optional) sets the properties on each feed item
+        // See https://github.com/jpmonette/feed#example for all options
+        nodeToFeedItem: (node) => ({
+          title: node.title,
+          date: node.date,
+          description: node.description ?? "",
+          link: "https://" + siteHostname + node.path,
+          content: node.content,
+          author: [
+            { name: "David Driscoll", email: "david.driscoll@gmail.com" },
+          ],
+        }),
+      },
+    },
+
+    {
+      use: "gridsome-plugin-robots-txt",
+      options: {
+        host: "https://" + siteHostname,
+        sitemap: "https://" + siteHostname + "/sitemap.xml",
+        policy: [
+          {
+            userAgent: "Googlebot",
+            allow: "/",
+            disallow: "/search",
+            crawlDelay: 2,
+          },
+          {
+            userAgent: "*",
+            allow: "/",
+            disallow: "/search",
+            crawlDelay: 10,
+            cleanParam: "ref /blog/",
+          },
+        ],
+      },
     },
 
     {
@@ -59,9 +142,8 @@ module.exports = {
       options: {
         typeName: "BlogPost", // Required
         baseDir: "./posts", // Where .md files are located
-        // pathPrefix: '/docs', // Add route prefix. Optional
         template: "./src/templates/BlogPost.vue", // Optional
-        route: "/:year/:month/:day/:slug",
+        route: "/blog/:year/:month/:day/:slug",
 
         refs: {
           series: "Series",
@@ -91,83 +173,6 @@ module.exports = {
     //         */
     //   },
     // },
-
-    {
-      use: "@microflash/gridsome-plugin-feed",
-      options: {
-        // (required) Provide GraphQL collection types
-        contentTypes: ["BlogPost"],
-
-        // (optional) Properties used by feed API
-        // See https://github.com/jpmonette/feed#example for all options
-        feedOptions: {
-          title: "My blog",
-          description: "My Personal blog on books, cookies and kittens",
-        },
-
-        // Available options with their default values
-
-        // (optional) Options for feed formats
-        // RSS is enabled by default
-        rss: {
-          enabled: true,
-          output: "/feed.xml",
-        },
-        atom: {
-          enabled: false,
-          output: "/feed.atom",
-        },
-        json: {
-          enabled: false,
-          output: "/feed.json",
-        },
-
-        // (optional) number of items to include in a feed
-        maxItems: 25,
-
-        // (optional) an array of properties to be parsed as HTML
-        // Converts relative URLs to absolute URLs
-        // You can disable this by omitting the option
-        htmlFields: ["content"],
-
-        // (optional) appends a trailing slash to the URLs
-        enforceTrailingSlashes: false,
-
-        // (optional) a function to filter out the nodes
-        // e.g., filter out all outdated posts, filterNodes: (node) => !!node.outdated
-        filterNodes: (node) => true,
-
-        // (optional) sets the properties on each feed item
-        // See https://github.com/jpmonette/feed#example for all options
-        nodeToFeedItem: (node) => ({
-          title: node.title,
-          date: node.date,
-          content: node.content,
-        }),
-      },
-    },
-    {
-      use: "gridsome-plugin-robots-txt",
-      options: {
-        host: "https://my-awesome-fast-site.com",
-        sitemap: "https://my-awesome-fast-site.com/configs/sitemap.xml",
-        policy: [
-          {
-            userAgent: "Googlebot",
-            allow: "/",
-            disallow: "/search",
-            crawlDelay: 2,
-          },
-          {
-            userAgent: "*",
-            allow: "/",
-            disallow: "/search",
-            crawlDelay: 10,
-            cleanParam: "ref /articles/",
-          },
-        ],
-      },
-    },
     // {
     //   use: "gridsome-plugin-recommender",
     //   options: {

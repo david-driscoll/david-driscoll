@@ -17,7 +17,11 @@
       "transform",
       "symbol",
       "title",
-      "inverse"
+      "inverse",
+      "primary-opacity",
+      "secondary-opacity",
+      "primary-color",
+      "secondary-color"
     ]
   },
   "FaIcon": {
@@ -38,7 +42,11 @@
       "transform",
       "symbol",
       "title",
-      "inverse"
+      "inverse",
+      "primary-opacity",
+      "secondary-opacity",
+      "primary-color",
+      "secondary-color"
     ]
   },
   "font-awesome-icon": {
@@ -59,7 +67,11 @@
       "transform",
       "symbol",
       "title",
-      "inverse"
+      "inverse",
+      "primary-opacity",
+      "secondary-opacity",
+      "primary-color",
+      "secondary-color"
     ]
   },
   "font-awesome-layers": {

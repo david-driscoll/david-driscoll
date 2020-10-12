@@ -8,9 +8,9 @@
         v-on="on"
         small
         :class="{
-          'light-blue--text': true,
-          'accent-1': !$vuetify.theme.isDark,
-          'accent-4': $vuetify.theme.isDark,
+          'deep-purple--text': true,
+          'text--accent-1': !$vuetify.theme.dark,
+          'text--accent-4': $vuetify.theme.dark,
         }"
       >
         <fa-icon
@@ -23,9 +23,7 @@
     </template>
 
     <v-card>
-      <v-card-title class="headline grey lighten-2">
-        License Info
-      </v-card-title>
+      <v-card-title class="headline accent"> License Info </v-card-title>
 
       <v-list>
         <v-list-item v-if="license.attribution">
