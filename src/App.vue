@@ -92,6 +92,7 @@
       </v-sheet>
     </v-navigation-drawer> -->
 
+    <!-- <v-img :src="bgImage" height="20vh"> </v-img> -->
     <v-main>
       <router-view />
     </v-main>
@@ -114,6 +115,8 @@ import {
   onMounted,
   ref,
   watch,
+  inject,
+  provide,
 } from "@vue/composition-api";
 import {
   faHomeAlt,
@@ -125,18 +128,24 @@ import {
   faHatWitch,
   faPodium,
 } from "@fortawesome/pro-duotone-svg-icons";
+import { getImage } from "./defaultImage";
+const image = getImage("App");
 export default defineComponent({
   setup() {
     const dark = ref(true);
+    const img = ref(image);
+    provide("bgImage", img);
 
     onBeforeMount(() => {
       dark.value = (localStorage.getItem("dark") ?? true) === "true";
     });
 
     watch(dark, (x) => localStorage.setItem("dark", x.toString()));
+    watch(img, (x) => (img.value = x || image));
 
     return {
       dark,
+      bgImage: img,
       tabs: [
         { to: "/about/", title: "About", icon: faUserTag },
         { to: "/tags/", title: "Tags", icon: faTags },

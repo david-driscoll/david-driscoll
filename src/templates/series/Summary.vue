@@ -16,7 +16,7 @@
 
 <page-query>
 query ($page: Int) {
-  series: allSeries(perPage: 10, page: $page, filter: { hasPosts: { eq: true }}) @paginate {
+  series: allSeries(perPage: 5, page: $page, filter: { hasPosts: { eq: true }}) @paginate {
     totalCount
     pageInfo {
       ...pageInfo

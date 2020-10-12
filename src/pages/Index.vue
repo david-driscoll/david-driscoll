@@ -1,5 +1,5 @@
 <template>
-  <Layout>
+  <Layout :image="image">
     <!-- Learn how to use images here: https://gridsome.org/docs/images -->
     <g-image alt="Example image" src="~/favicon.png" width="135" />
 
@@ -22,22 +22,30 @@
         >GitHub</a
       >
 
-      <div v-for="edge in $page.posts.edges" :key="edge.node.id" :post="edge.node">
-        {{edge.node.title}}
-      </div>
+      <v-card
+        v-for="edge in $page.posts.edges"
+        :key="edge.node.id"
+        :post="edge.node"
+        :to="edge.node.path"
+      >
+        {{ edge.node.title }}
+      </v-card>
 
-      <div v-for="edge in $page.series.edges" :key="edge.node.id" :post="edge.node">
+      <!-- <div v-for="edge in $page.series.edges" :key="edge.node.id" :post="edge.node">
         {{edge.node.title}}
-      </div>
+      </div> -->
     </p>
   </Layout>
 </template>
 
 <script>
 import { defineComponent } from "@vue/composition-api";
+import { getImage } from "../defaultImage";
 export default defineComponent({
   setup() {
-    return {};
+    return {
+      image: getImage("App"),
+    };
   },
   metaInfo: {
     title: "Hello, world!",
@@ -52,22 +60,13 @@ export default defineComponent({
 </style>
 
 <page-query>
-query {
-  posts: allBlogPost(filter: { }) {
+query ($page: Int) {
+  posts: allBlogPost(perPage: 5, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
     edges {
       node {
         id
         title
-        date (format: "D. MMMM YYYY")
-        path
-      }
-    }
-  }
-  series: allSeries(filter: { }) {
-    edges {
-      node {
-        id
-        title
+        date (format: "dddd, MMMM D YYYY")
         path
       }
     }

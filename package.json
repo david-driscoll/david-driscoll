@@ -47,6 +47,7 @@
     "@graphql-codegen/typescript-operations": "^1.17.8",
     "@playlyfe/gql": "^2.6.2",
     "@tyankatsu0105/types-gridsome": "^0.6.0",
+    "@types/trianglify": "^1.2.0",
     "gridsome-plugin-typescript": "^0.4.0",
     "nodemon": "^2.0.4",
     "sass": "^1.27.0",
