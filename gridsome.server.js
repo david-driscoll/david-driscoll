@@ -5,9 +5,36 @@
 const { default: slugify } = require("slugify");
 const nodeExternals = require("webpack-node-externals");
 const { DateTime } = require("luxon");
+const trianglify = require("trianglify");
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
+
+const colors = ["PuOr", "PRGn", "PiYG", "RdBu", "RdYlBu", "Spectral", "RdYlGn"];
+/*Object.keys(trianglify.utils.colorbrewer).filter(
+  (z) => !z.endsWith("s")
+);*/
+
+function ensureImage(data, key) {
+  if (!data.image) data.image = { path: undefined };
+  if (!data.image.path) {
+    const seed = mulberry32(key)() * colors.length;
+    const colorIndex = Math.floor(seed);
+    const image = trianglify({
+      width: 3840,
+      height: 960,
+      seed: key,
+      cellSize: 160,
+      xColors: trianglify.utils.colorbrewer[colors[colorIndex]],
+      strokeWidth: 2,
+      variance: 0.44,
+    });
+    data.image.path = image.toSVG().toString();
+    data.image.path = `data:image/svg+xml;base64,${Buffer.from(
+      data.image.path
+    ).toString("base64")}`;
+  }
+}
 
 /**
  * @param {object} data
@@ -24,6 +51,8 @@ const { DateTime } = require("luxon");
  */
 function onBlogPost(data) {
   data.tags = data.tags ?? [];
+
+  ensureImage(data, data.title);
 
   let now = DateTime.utc();
   data.isFuture = DateTime.fromJSDate(data.date) > now;
@@ -56,6 +85,7 @@ function onBlogPost(data) {
  */
 function onSeries(data) {
   data.id = data.fileInfo.name;
+  ensureImage(data, data.id);
   data.hasPosts = false;
   data.lastPost = new Date(0);
   // console.log(data);
@@ -169,4 +199,30 @@ function onTypeCreated(typeName, fn) {
   function onTypeCreatedResult(data) {
     if (data.internal.typeName === typeName) fn(data);
   }
+}
+
+function mulberry32(seed) {
+  if (!seed) {
+    seed = Math.random().toString(36);
+  } // support no-seed usage
+  var a = xmur3(seed)();
+  return function() {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function xmur3(str) {
+  for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function() {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  };
 }

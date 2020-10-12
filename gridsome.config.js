@@ -24,6 +24,78 @@ module.exports = {
     },
 
     {
+      use: "@gridsome/source-filesystem",
+      options: {
+        typeName: "Series",
+        path: "series/**/*.yml",
+        /*
+        refs: {
+              // Reference to existing authors by id.
+              author: 'Author',
+              // Create a Tag content type and its nodes automatically.
+              tags: {
+                typeName: 'Tag',
+                create: true
+              }
+            }
+            */
+      },
+    },
+
+    {
+      use: "@gridsome/vue-remark",
+      options: {
+        typeName: "BlogPost", // Required
+        baseDir: "./posts", // Where .md files are located
+        template: "./src/templates/BlogPost.vue", // Optional
+        route: "/blog/:year/:month/:day/:slug",
+
+        refs: {
+          series: "Series",
+          tags: {
+            typeName: "Tag",
+            create: true,
+          },
+        },
+      },
+    },
+
+    // {
+    //   use: "@gridsome/source-filesystem",
+    //   options: {
+    //     typeName: "BlogPost",
+    //     path: "posts/**/*.md",
+    //     /*
+    //     refs: {
+    //           // Reference to existing authors by id.
+    //           author: 'Author',
+    //           // Create a Tag content type and its nodes automatically.
+    //           tags: {
+    //             typeName: 'Tag',
+    //             create: true
+    //           }
+    //         }
+    //         */
+    //   },
+    // },
+    // {
+    //   use: "gridsome-plugin-recommender",
+    //   options: {
+    //     enabled: true,
+    //     typeName: "BlogPost",
+    //     field: "title",
+    //     relatedFieldName: "related",
+    //     minScore: 0.01,
+    //     maxScore: 1,
+    //     minRelations: 3,
+    //     maxRelations: 10,
+    //     fillWithRandom: false,
+    //     debug: false,
+    //   },
+    // },
+    // todo flex search
+
+    {
       use: "@gridsome/plugin-sitemap",
       options: {
         config: {
@@ -46,6 +118,14 @@ module.exports = {
         feedOptions: {
           title: siteName + " Blog",
           description: siteDescription,
+          // image: "http://example.com/image.png",
+          // favicon: "http://example.com/favicon.ico",
+          // copyright: "All rights reserved 2013, John Doe",
+          // author: {
+          //   name: "John Doe",
+          //   email: "johndoe@example.com",
+          //   link: "https://example.com/johndoe"
+          // }
         },
 
         // Available options with their default values
@@ -117,78 +197,6 @@ module.exports = {
         ],
       },
     },
-
-    {
-      use: "@gridsome/source-filesystem",
-      options: {
-        typeName: "Series",
-        path: "series/**/*.yml",
-        /*
-        refs: {
-              // Reference to existing authors by id.
-              author: 'Author',
-              // Create a Tag content type and its nodes automatically.
-              tags: {
-                typeName: 'Tag',
-                create: true
-              }
-            }
-            */
-      },
-    },
-
-    {
-      use: "@gridsome/vue-remark",
-      options: {
-        typeName: "BlogPost", // Required
-        baseDir: "./posts", // Where .md files are located
-        template: "./src/templates/BlogPost.vue", // Optional
-        route: "/blog/:year/:month/:day/:slug",
-
-        refs: {
-          series: "Series",
-          tags: {
-            typeName: "Tag",
-            create: true,
-          },
-        },
-      },
-    },
-
-    // {
-    //   use: "@gridsome/source-filesystem",
-    //   options: {
-    //     typeName: "BlogPost",
-    //     path: "posts/**/*.md",
-    //     /*
-    //     refs: {
-    //           // Reference to existing authors by id.
-    //           author: 'Author',
-    //           // Create a Tag content type and its nodes automatically.
-    //           tags: {
-    //             typeName: 'Tag',
-    //             create: true
-    //           }
-    //         }
-    //         */
-    //   },
-    // },
-    // {
-    //   use: "gridsome-plugin-recommender",
-    //   options: {
-    //     enabled: true,
-    //     typeName: "BlogPost",
-    //     field: "title",
-    //     relatedFieldName: "related",
-    //     minScore: 0.01,
-    //     maxScore: 1,
-    //     minRelations: 3,
-    //     maxRelations: 10,
-    //     fillWithRandom: false,
-    //     debug: false,
-    //   },
-    // },
-    // todo flex search
   ],
   templates: {
     // BlogPost: "/blog/:year/:month/:day/:slug",

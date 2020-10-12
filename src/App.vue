@@ -1,41 +1,71 @@
 <template>
   <v-app>
     <v-app-bar app clipped-left dense>
-      <v-app-bar-nav-icon class="menu-icon" @click="drawer = !drawer" />
-      <v-tabs
-        centered
-        optional
-        icons-and-text
-        :grow="$vuetify.breakpoint.mobile"
-      >
-        <v-tab to="/" exact :style="tabStyle">
-          Home
-          <fa-icon
-            primary-opacity="0.5"
-            secondary-opacity="0.5"
-            fixedWidth
-            :icon="$icons.faHomeAlt"
-          />
+      <v-spacer />
+      <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
+        <v-tab
+          to="/"
+          exact
+          :style="tabStyle"
+          class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize"
+        >
+          <!-- <fa-icon class="mx-2" fixedWidth :icon="$icons.faHomeAlt" /> -->
+          <span>David</span>
+          <span v-if="$vuetify.breakpoint.smAndUp">&nbsp;Driscoll</span>
         </v-tab>
-        <v-tab to="/about/" exact :style="tabStyle">
-          About
-          <fa-icon fixedWidth :icon="$icons.faUserTag" />
+        <v-spacer />
+        <v-btn
+          v-if="!$vuetify.breakpoint.mobile"
+          icon
+          :fab="$vuetify.breakpoint.mobile"
+          @click="dark = !dark"
+        >
+          <fa-icon :icon="dark ? $icons.faMoonStars : $icons.faSun" size="xs" />
+        </v-btn>
+        <v-tab
+          v-for="tab in tabs"
+          :to="tab.to"
+          :key="tab.to"
+          exact
+          :style="tabStyle"
+          :class="{ 'flex-column': $vuetify.breakpoint.smAndDown }"
+        >
+          <fa-icon
+            fixedWidth
+            :icon="tab.icon"
+            transform="shrink-4"
+            v-if="tab.icon"
+          />
+          <span>{{ tab.title }}</span>
         </v-tab>
       </v-tabs>
-      <v-btn icon @click="dark = !dark">
-        <fa-icon :icon="dark ? $icons.faMoonStars : $icons.faSun" />
-      </v-btn>
+      <template v-slot:extension v-if="$vuetify.breakpoint.mobile">
+        <v-fab-transition>
+          <v-btn
+            fab
+            absolute
+            bottom
+            right
+            @click="dark = !dark"
+            color="secondary"
+          >
+            <fa-icon
+              :icon="dark ? $icons.faMoonStars : $icons.faSun"
+              size="xs"
+            />
+          </v-btn>
+        </v-fab-transition>
+      </template>
       <!--
       <v-responsive max-width="260" min-width="260" class="search align-center">
         <v-text-field dense flat hide-details rounded solo-inverted />
       </v-responsive>
       -->
     </v-app-bar>
-    <v-navigation-drawer
+    <!-- <v-navigation-drawer
       app
       :class="{ 'rounded-lg': !$vuetify.breakpoint.mobile }"
       :style="{ 'margin-top': !$vuetify.breakpoint.mobile ? '24px' : '' }"
-      v-model="drawer"
       clipped
     >
       <v-sheet rounded="lg">
@@ -57,10 +87,10 @@
             <v-list-item-content>
               <v-list-item-title> Refresh </v-list-item-title>
             </v-list-item-content>
-          </v-list-item> -->
+          </v-list-item>
         </v-list>
       </v-sheet>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
 
     <v-main>
       <router-view />
@@ -91,6 +121,9 @@ import {
   faBook,
   faSun,
   faMoonStars,
+  faTags,
+  faHatWitch,
+  faPodium,
 } from "@fortawesome/pro-duotone-svg-icons";
 export default defineComponent({
   setup() {
@@ -103,8 +136,13 @@ export default defineComponent({
     watch(dark, (x) => localStorage.setItem("dark", x.toString()));
 
     return {
-      drawer: ref(),
       dark,
+      tabs: [
+        { to: "/about/", title: "About", icon: faUserTag },
+        { to: "/tags/", title: "Tags", icon: faTags },
+        { to: "/projects/", title: "Projects", icon: faHatWitch },
+        { to: "/speaking/", title: "Speaking", icon: faPodium },
+      ],
       links: [
         {
           icon: faBook,
@@ -120,6 +158,9 @@ export default defineComponent({
     faBook,
     faSun,
     faMoonStars,
+    faTags,
+    faHatWitch,
+    faPodium,
   },
   computed: {
     tabStyle() {
