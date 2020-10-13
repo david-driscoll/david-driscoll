@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app clipped-left dense>
+    <v-app-bar app clipped-left dense hide-on-scroll>
       <v-spacer />
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
         <v-tab

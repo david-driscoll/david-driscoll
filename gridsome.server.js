@@ -20,12 +20,23 @@ function ensureImage(data, key) {
   if (!data.image.path) {
     const seed = mulberry32(key)() * colors.length;
     const colorIndex = Math.floor(seed);
+    let localColors = trianglify.utils.colorbrewer[colors[colorIndex]];
+
+    const c = localColors
+      .slice(Math.floor(localColors.length / 2))
+      .concat(localColors.slice(0, Math.ceil(localColors.length / 2)));
+    console.log(
+      localColors,
+      Math.floor(localColors.length / 2),
+      Math.ceil(localColors.length / 2),
+      c
+    );
     const image = trianglify({
       width: 3840,
       height: 960,
       seed: key,
       cellSize: 160,
-      xColors: trianglify.utils.colorbrewer[colors[colorIndex]],
+      xColors: c,
       strokeWidth: 2,
       variance: 0.44,
     });
