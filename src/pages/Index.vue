@@ -1,5 +1,10 @@
 <template>
-  <Layout :image="image" :title="$static.metadata.siteName" overlay>
+  <Layout
+    :image="image"
+    :title="$static.metadata.siteName"
+    :description="$static.metadata.siteDescription"
+    overlay
+  >
     <!-- Learn how to use images here: https://gridsome.org/docs/images -->
     <g-image alt="Example image" src="~/favicon.png" width="135" />
 
@@ -97,6 +102,7 @@
 query {
   metadata {
     siteName
+    siteDescription
   }
 }
 </static-query>

@@ -4,10 +4,10 @@
       <v-container
         v-if="title || description"
         style="height: 15vw"
-        class="d-flex justify-center align-center"
+        class="d-flex justify-center align-center flex-column"
       >
         <h1 v-html="title" v-if="title" />
-        <h3 v-html="description" v-if="description" />
+        <h3 class="text-body-1" v-html="description" v-if="description" />
       </v-container>
 
       <v-container :style="{ 'margin-top': overlay ? '-2vw' : '' }">
