@@ -11,18 +11,6 @@ import DefaultLayout from "~/layouts/Default.vue";
 import VueCompositionAPI from '@vue/composition-api'
 import { iconPlugin } from './icons';
 import { faArrowsAltV, faBars, faCaretDown, faCheck, faCheckCircle, faInfoSquare, faInfo, faCheckSquare, faChevronDown, faChevronUp, faChevronLeft, faChevronRight, faCircle, fad, faDotCircle, faEdit, faExclamation, faExclamationTriangle, faInfoCircle, faMinus, faMinusSquare, faPaperclip, faPlus, faSortUp, faSquare, faStar, faStarHalf, faStepBackward, faStepForward, faSync, faTimes, faTimesCircle } from "@fortawesome/pro-duotone-svg-icons";
-import {
-  faKeybase,
-  faLinkedin,
-  faStackOverflow,
-  faPatreon,
-  faVimeo,
-  faPaypal,
-  faGithub,
-  faTwitter,
-  faTwitch
-
- } from "@fortawesome/free-brands-svg-icons";
 
 /** @type import('@tyankatsu0105/types-gridsome').Client */
 export default function (Vue: Parameters<Client>[0], { router, head, isClient, appOptions }: Parameters<Client>[1]) {
@@ -107,15 +95,6 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
          faPlus,
          faMinus,
 
-        faKeybase,
-        faLinkedin,
-        faStackOverflow,
-        faPatreon,
-        faVimeo,
-        faPaypal,
-        faGithub,
-        faTwitter,
-        faTwitch
       })
     },
 

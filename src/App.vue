@@ -1,5 +1,44 @@
 <template>
   <v-app>
+    <v-speed-dial
+      fixed
+      v-model="fab"
+      direction="top"
+      bottom
+      right
+      open-on-hover
+      transition="scale-transition"
+    >
+      <template v-slot:activator>
+        <v-btn v-model="fab" color="primary" dark fab>
+          <fa-icon v-if="fab" :icon="$icons.clear" />
+          <fa-icon v-else :icon="$icons.faExternalLinkAlt" />
+        </v-btn>
+      </template>
+      <v-btn fab :dark="dark" small color="green">
+        <fa-icon :icon="$icons.faKeybase" />
+        <!-- <fa-icon :icon="$icons.faGithub"/>
+            <fa-icon :icon="$icons.faStackOverflow"/>
+            <fa-icon :icon="$icons.faTwitter"/>
+            <fa-icon :icon="$icons.faTwitch"/>
+            <fa-icon :icon="$icons.faLinkedin"/> -->
+      </v-btn>
+      <v-btn link icon dark small color="indigo">
+        <fa-icon :icon="$icons.faGithub" />
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <fa-icon :icon="$icons.faStackOverflow" />
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <fa-icon :icon="$icons.faTwitter" />
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <fa-icon :icon="$icons.faTwitch" />
+      </v-btn>
+      <v-btn fab dark small color="red">
+        <fa-icon :icon="$icons.faLinkedin" />
+      </v-btn>
+    </v-speed-dial>
     <v-app-bar app clipped-left dense hide-on-scroll>
       <v-spacer />
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
@@ -56,43 +95,7 @@
           </v-btn>
         </v-fab-transition>
       </template>
-      <!--
-      <v-responsive max-width="260" min-width="260" class="search align-center">
-        <v-text-field dense flat hide-details rounded solo-inverted />
-      </v-responsive>
-      -->
     </v-app-bar>
-    <!-- <v-navigation-drawer
-      app
-      :class="{ 'rounded-lg': !$vuetify.breakpoint.mobile }"
-      :style="{ 'margin-top': !$vuetify.breakpoint.mobile ? '24px' : '' }"
-      clipped
-    >
-      <v-sheet rounded="lg">
-        <v-list color="transparent" class="pa-0">
-          <v-list-item
-            v-for="link in links"
-            :key="link.path"
-            link
-            :to="link.path"
-          >
-            <v-list-item-content>
-              <v-list-item-title
-                ><fa-icon fixedWidth :icon="link.icon" />{{ link.title }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-
-          <!-- <v-list-item link>
-            <v-list-item-content>
-              <v-list-item-title> Refresh </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-sheet>
-    </v-navigation-drawer> -->
-
-    <!-- <v-img :src="bgImage" height="20vh"> </v-img> -->
     <v-main>
       <router-view />
     </v-main>
@@ -119,6 +122,17 @@ import {
   provide,
 } from "@vue/composition-api";
 import {
+  faKeybase,
+  faLinkedin,
+  faStackOverflow,
+  faPatreon,
+  faVimeo,
+  faPaypal,
+  faGithub,
+  faTwitter,
+  faTwitch,
+} from "@fortawesome/free-brands-svg-icons";
+import {
   faHomeAlt,
   faUserTag,
   faBook,
@@ -127,6 +141,7 @@ import {
   faTags,
   faHatWitch,
   faPodium,
+  faExternalLinkAlt,
 } from "@fortawesome/pro-duotone-svg-icons";
 import { getImage } from "./defaultImage";
 const image = getImage("App");
@@ -134,10 +149,14 @@ export default defineComponent({
   setup() {
     const dark = ref(true);
     const img = ref(image);
+    const fab = ref(false);
     provide("bgImage", img);
 
     onBeforeMount(() => {
-      dark.value = (localStorage.getItem("dark") ?? true) === "true";
+      const isDark = localStorage.getItem("dark");
+      dark.value = isDark
+        ? isDark === "true"
+        : window?.matchMedia("(prefers-color-scheme: dark)").matches === true;
     });
 
     watch(dark, (x) => localStorage.setItem("dark", x.toString()));
@@ -145,7 +164,7 @@ export default defineComponent({
 
     return {
       dark,
-      bgImage: img,
+      fab,
       tabs: [
         { to: "/about/", title: "About", icon: faUserTag },
         { to: "/tags/", title: "Tags", icon: faTags },
@@ -170,6 +189,16 @@ export default defineComponent({
     faTags,
     faHatWitch,
     faPodium,
+    faKeybase,
+    faLinkedin,
+    faStackOverflow,
+    faPatreon,
+    faVimeo,
+    faPaypal,
+    faGithub,
+    faTwitter,
+    faTwitch,
+    faExternalLinkAlt,
   },
   computed: {
     tabStyle() {

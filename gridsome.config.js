@@ -165,7 +165,7 @@ module.exports = {
         nodeToFeedItem: (node) => ({
           title: node.title,
           date: node.date,
-          description: node.description ?? "",
+          description: node.description || "",
           link: "https://" + siteHostname + node.path,
           content: node.content,
           author: [
