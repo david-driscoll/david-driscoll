@@ -35,7 +35,7 @@ function ensureImage(data, key) {
       variance: 0.44,
     });
 
-    data.description = data.description ?? "";
+    data.description = data.description || "";
     data.image.path = image.toSVG().toString();
     data.image.path = `data:image/svg+xml;base64,${Buffer.from(
       data.image.path
@@ -57,8 +57,8 @@ function ensureImage(data, key) {
  * @param {number} data.internal.timestamp
  */
 function onBlogPost(data) {
-  data.tags = data.tags ?? [];
-  data.description = data.description ?? "";
+  data.tags = data.tags || [];
+  data.description = data.description || "";
   data.path = `/blog${data.dateInfo.path}${data.slug}`;
 
   ensureImage(data, data.title);

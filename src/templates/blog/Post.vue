@@ -2,8 +2,17 @@
   <blog-card :post="post" :linkTo="false" min-height="40vh">
     <v-container class="pa-0">
       <v-row class="d-flex justify-space-around">
-        <v-col><g-link v-if="$page.prev" :to="$page.prev.path">Prev</g-link></v-col>
-        <v-col><g-link v-if="$page.next" :to="$page.next.path">Next</g-link></v-col>
+        <v-col>
+          <g-link v-if="$page.prev" :to="$page.prev.path">
+<v-btn link elevation="0"><fa-icon :icon="$vuetify.icons.$prev"/></v-btn>
+          </g-link>
+          </v-col>
+        <v-col>
+          <g-link v-if="$page.next" :to="$page.next.path">
+            <v-btn link elevation="0"><fa-icon :icon="$vuetify.icons.$next"/></v-btn>
+
+          </g-link>
+          </v-col>
       </v-row>
       <v-row class="d-flex justify-space-around text-center">
         <v-col cols="12" md="4">
