@@ -25,12 +25,6 @@ function ensureImage(data, key) {
     const c = localColors
       .slice(Math.floor(localColors.length / 2))
       .concat(localColors.slice(0, Math.ceil(localColors.length / 2)));
-    console.log(
-      localColors,
-      Math.floor(localColors.length / 2),
-      Math.ceil(localColors.length / 2),
-      c
-    );
     const image = trianglify({
       width: 3840,
       height: 960,
@@ -40,6 +34,8 @@ function ensureImage(data, key) {
       strokeWidth: 2,
       variance: 0.44,
     });
+
+    data.description = data.description ?? "";
     data.image.path = image.toSVG().toString();
     data.image.path = `data:image/svg+xml;base64,${Buffer.from(
       data.image.path
@@ -62,6 +58,7 @@ function ensureImage(data, key) {
  */
 function onBlogPost(data) {
   data.tags = data.tags ?? [];
+  data.description = data.description ?? "";
 
   ensureImage(data, data.title);
 
@@ -154,6 +151,8 @@ module.exports = function(api) {
         data.slug = slugify(data.title).toLowerCase();
       } else if (data.name) {
         data.slug = slugify(data.name).toLowerCase();
+      } else {
+        data.slug = slugify(data.id).toLowerCase();
       }
       if (data.path && data.slug) {
         data.path = data.path.replace(/\/slug/g, "/" + data.slug);
@@ -180,6 +179,10 @@ module.exports = function(api) {
     createPage({
       path: "/series/",
       component: "./src/templates/series/Summary.vue",
+    });
+    createPage({
+      path: "/blog/",
+      component: "./src/templates/BlogList.vue",
     });
     // createPage({
     //   path: "/series/:id",

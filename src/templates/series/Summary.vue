@@ -31,11 +31,17 @@ query ($page: Int) {
           path
           license {
             attribution {
-              name,
+              name
               url
-            },
-            author{name, url}
-            original{name, url}
+            }
+            author {
+              name
+              url
+            }
+            original {
+              name
+              url
+            }
           }
         }
         posts: belongsTo(sort: { by:"date", order: ASC }) {
@@ -80,8 +86,10 @@ export default defineComponent({
   },
 
   components: { SeriesCard },
-  metaInfo: {
-    title: "Series",
+  metaInfo() {
+    return {
+      title: "Series",
+    };
   },
 });
 </script>

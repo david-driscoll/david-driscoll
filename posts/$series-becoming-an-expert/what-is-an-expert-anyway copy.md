@@ -1,7 +1,7 @@
 ---
 title: What is an expert anyway?
 description: Imposters are everywhere... and this is okay.
-date: 2020-08-01
+date: 2020-08-02
 tags:
   - expert
   - imposter

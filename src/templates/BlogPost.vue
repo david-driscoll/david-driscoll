@@ -1,28 +1,33 @@
 <template>
-  <v-container fluid class="pa-0">
-    <v-img
-      :src="$page.post.image.path"
-      aspect-ratio="16/4"
-      height="400"
-      class="pa-2 align-end"
-    >
-      <v-container>
-        <h1 v-html="$page.post.title" />
-        <h3 v-html="$page.post.description" />
-      </v-container>
-    </v-img>
-    <v-container>
-      <v-card min-height="60vh" rounded="lg">
-        <v-card-subtitle v-text="$page.post.description" />
-        <v-card-text v-html="$page.post.content" />
-      </v-card>
+  <blog-card :post="$page.post" :linkTo="false">
+    <v-container class="pa-0">
+      <v-row class="d-flex justify-space-around text-center">
+        <v-col cols="12" md="4">
+          <v-card>
+            <v-card-text>Series</v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card>
+            <v-card-text>You might like</v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-card>
+            <v-card-text>something else...</v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
-  </v-container>
+  </blog-card>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
+import Layout from "../layouts/Default.vue";
+import BlogCard from "../components/BlogCard.vue";
 export default defineComponent({
+  components: { BlogCard },
   mounted() {},
   setup() {
     return {};
@@ -36,7 +41,10 @@ export default defineComponent({
 <page-query>
 query ($id: ID!) {
   post: blogPost(id: $id) {
+    id
     title
+    date
+    path
     content
     description
     image { path }

@@ -5,6 +5,7 @@ import { VuetifyIcon, VuetifyIcons } from 'vuetify/types/services/icons';
 import { from } from 'ix/iterable';
 import { filter, map } from 'ix/iterable/operators';
 import '../../node_modules/@fortawesome/fontawesome-svg-core/styles.css'
+import './fa.css'
 config.autoAddCss = false;
 
 function constant<T>(value: T) {

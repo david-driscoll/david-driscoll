@@ -27,7 +27,13 @@
         >GitHub</a
       >
 
-      <br />
+      <v-sheet color="primary" height="40" width="40"></v-sheet>
+      <v-sheet color="secondary" height="40" width="40"></v-sheet>
+      <v-sheet color="accent" height="40" width="40"></v-sheet>
+      <v-sheet color="error" height="40" width="40"></v-sheet>
+      <v-sheet color="warning" height="40" width="40"></v-sheet>
+      <v-sheet color="info" height="40" width="40"></v-sheet>
+      <v-sheet color="success" height="40" width="40"></v-sheet>
       <br />
       <br />
       <br />
@@ -89,6 +95,7 @@
         :to="edge.node.path"
       >
         {{ edge.node.title }}
+        {{ edge.node.date }}
       </v-card>
 
       <!-- <div v-for="edge in $page.series.edges" :key="edge.node.id" :post="edge.node">
@@ -110,14 +117,23 @@ query {
 <script>
 import { defineComponent } from "@vue/composition-api";
 import { getImage } from "../defaultImage";
+import Layout from "../layouts/Default.vue";
 export default defineComponent({
+  components: { Layout },
   setup() {
-    return {
-      image: getImage("App"),
-    };
+    // return {
+    //   image: getImage("App"),
+    // };
   },
-  metaInfo: {
-    title: "Hello, world!",
+  computed: {
+    image() {
+      return getImage("App");
+    },
+  },
+  metaInfo() {
+    return {
+      title: "Hello, world!",
+    };
   },
 });
 </script>
@@ -130,15 +146,28 @@ export default defineComponent({
 
 <page-query>
 query ($page: Int) {
-  posts: allBlogPost(perPage: 5, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
+  posts: allBlogPost(perPage: 3, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
+    totalCount
+    pageInfo {
+      ...pageInfo
+    }
     edges {
       node {
-        id
         title
         date (format: "dddd, MMMM D YYYY")
         path
       }
     }
   }
+}
+
+fragment pageInfo on PageInfo {
+  totalItems
+  hasPreviousPage
+  hasNextPage
+  isFirst
+  isLast
+  totalPages
+  currentPage
 }
 </page-query>

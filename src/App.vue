@@ -1,49 +1,11 @@
 <template>
   <v-app>
-    <v-speed-dial
-      fixed
-      v-model="fab"
-      direction="top"
-      bottom
-      right
-      open-on-hover
-      transition="scale-transition"
-    >
-      <template v-slot:activator>
-        <v-btn v-model="fab" color="primary" dark fab>
-          <fa-icon v-if="fab" :icon="$icons.clear" />
-          <fa-icon v-else :icon="$icons.faExternalLinkAlt" />
-        </v-btn>
-      </template>
-      <v-btn fab :dark="dark" small color="green">
-        <fa-icon :icon="$icons.faKeybase" />
-        <!-- <fa-icon :icon="$icons.faGithub"/>
-            <fa-icon :icon="$icons.faStackOverflow"/>
-            <fa-icon :icon="$icons.faTwitter"/>
-            <fa-icon :icon="$icons.faTwitch"/>
-            <fa-icon :icon="$icons.faLinkedin"/> -->
-      </v-btn>
-      <v-btn link icon dark small color="indigo">
-        <fa-icon :icon="$icons.faGithub" />
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <fa-icon :icon="$icons.faStackOverflow" />
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <fa-icon :icon="$icons.faTwitter" />
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <fa-icon :icon="$icons.faTwitch" />
-      </v-btn>
-      <v-btn fab dark small color="red">
-        <fa-icon :icon="$icons.faLinkedin" />
-      </v-btn>
-    </v-speed-dial>
     <v-app-bar app clipped-left dense hide-on-scroll>
       <v-spacer />
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
         <v-tab
           to="/"
+          g-link
           exact
           :style="tabStyle"
           class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize"
@@ -53,12 +15,7 @@
           <span v-if="$vuetify.breakpoint.smAndUp">&nbsp;Driscoll</span>
         </v-tab>
         <v-spacer />
-        <v-btn
-          v-if="!$vuetify.breakpoint.mobile"
-          icon
-          :fab="$vuetify.breakpoint.mobile"
-          @click="dark = !dark"
-        >
+        <v-btn icon @click="dark = !dark">
           <fa-icon :icon="dark ? $icons.faMoonStars : $icons.faSun" size="xs" />
         </v-btn>
         <v-tab
@@ -78,7 +35,7 @@
           <span>{{ tab.title }}</span>
         </v-tab>
       </v-tabs>
-      <template v-slot:extension v-if="$vuetify.breakpoint.mobile">
+      <!-- <template v-slot:extension v-if="$vuetify.breakpoint.mobile">
         <v-fab-transition>
           <v-btn
             fab
@@ -94,11 +51,55 @@
             />
           </v-btn>
         </v-fab-transition>
-      </template>
+      </template> -->
     </v-app-bar>
     <v-main>
       <router-view />
     </v-main>
+    <v-footer class="body-2">
+      <v-container>
+        <v-row>
+          <v-col cols="12" class="d-flex justify-space-around">
+            Copyright &copy; David Driscoll 2019 -
+            {{ this.$static.metadata.build.year }}
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="d-flex justify-space-around">
+            <v-tooltip top v-for="s in social" :key="s.url">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  fab
+                  :href="s.url"
+                  target="_blank"
+                  :dark="dark"
+                  small
+                  :color="
+                    (s.blackWhite &&
+                      ($vuetify.theme.dark ? 'white' : 'black')) ||
+                    s.buttonColor
+                  "
+                >
+                  <fa-icon
+                    :icon="s.icon"
+                    :class="{
+                      'white--text':
+                        (s.blackWhite && !$vuetify.theme.dark) || !s.blackWhite,
+                      'black--text': s.blackWhite && $vuetify.theme.dark,
+                    }"
+                  />
+                </v-btn>
+              </template>
+              <span
+                v-text="s.username ? `${s.title} (${s.username})` : s.title"
+              ></span>
+            </v-tooltip>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-footer>
   </v-app>
 </template>
 
@@ -107,6 +108,9 @@ query {
   metadata {
     siteName
     siteDescription
+    build {
+      year
+    }
   }
 }
 </static-query>
@@ -119,6 +123,7 @@ import {
   ref,
   watch,
   inject,
+  computed,
   provide,
 } from "@vue/composition-api";
 import {
@@ -142,17 +147,20 @@ import {
   faHatWitch,
   faPodium,
   faExternalLinkAlt,
+  faInfoCircle,
+  faQuestionCircle,
+  faBlog,
 } from "@fortawesome/pro-duotone-svg-icons";
 import { getImage } from "./defaultImage";
 const image = getImage("App");
 export default defineComponent({
-  setup() {
+  setup(props, context) {
     const dark = ref(true);
     const img = ref(image);
     const fab = ref(false);
     provide("bgImage", img);
 
-    onBeforeMount(() => {
+    onMounted(() => {
       const isDark = localStorage.getItem("dark");
       dark.value = isDark
         ? isDark === "true"
@@ -167,9 +175,10 @@ export default defineComponent({
       fab,
       tabs: [
         { to: "/about/", title: "About", icon: faUserTag },
-        { to: "/tags/", title: "Tags", icon: faTags },
+        { to: "/blog/", title: "Blog", icon: faBlog },
         { to: "/projects/", title: "Projects", icon: faHatWitch },
         { to: "/speaking/", title: "Speaking", icon: faPodium },
+        { to: "/tags/", title: "Tags", icon: faTags },
       ],
       links: [
         {
@@ -178,7 +187,59 @@ export default defineComponent({
           path: "/series/",
         },
       ],
+      social: [
+        {
+          icon: faGithub,
+          blackWhite: true,
+          title: "GitHub",
+          username: "david-driscoll",
+          url: "https://github.com/david-driscoll",
+        },
+        {
+          icon: faTwitter,
+          title: "Twitter",
+          username: "@david_dotnet",
+          url: "https://www.twitter.com/david_dotnet",
+          buttonColor: "#55acee",
+        },
+        {
+          icon: faLinkedin,
+          title: "Linkedin",
+          username: "",
+          url: "https://www.linkedin.com/in/david-driscoll-285b7a34/",
+          buttonColor: "#0e76a8",
+        },
+        {
+          icon: faStackOverflow,
+          title: "StackOverflow",
+          username: "",
+          url: "https://stackoverflow.com/users/400771/david-driscoll",
+          buttonColor: "#FF9900",
+        },
+        {
+          icon: faKeybase,
+          title: "Keybase",
+          username: "daviddriscoll",
+          url: "https://keybase.io/daviddriscoll",
+          buttonColor: "#FF6F21",
+        },
+        // {
+        //   icon: faTwitch,
+        //   title: "Twitch",
+        //   username: "ddriscoll",
+        //   url: "https://www.twitch.tv/ddriscoll",
+        //   buttonColor: "#6441A4",
+        // },
+      ],
     };
+  },
+  computed: {
+    tabStyle() {
+      if (this.$vuetify.breakpoint.mobile) return {};
+      return {
+        "min-width": "120px",
+      };
+    },
   },
   icons: {
     faHomeAlt,
@@ -198,15 +259,7 @@ export default defineComponent({
     faGithub,
     faTwitter,
     faTwitch,
-    faExternalLinkAlt,
-  },
-  computed: {
-    tabStyle() {
-      if (this.$vuetify.breakpoint.mobile) return {};
-      return {
-        "min-width": "120px",
-      };
-    },
+    faQuestionCircle,
   },
   watch: {
     dark: {

@@ -12,12 +12,16 @@
 
 <script>
 import { defineComponent } from "@vue/composition-api";
+import Layout from "../layouts/Default.vue";
 export default defineComponent({
+  components: { Layout },
   setup() {
     return {};
   },
-  metaInfo: {
-    title: "About us",
+  metaInfo() {
+    return {
+      title: "About us",
+    };
   },
 });
 </script>

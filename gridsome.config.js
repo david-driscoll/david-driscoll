@@ -4,16 +4,29 @@
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
 const { VuetifyLoaderPlugin } = require("vuetify-loader");
+const { DateTime } = require("luxon");
 
 const siteName = "David Driscoll";
 const siteHostname = "www.daviddriscoll.me";
 const siteDescription = "Ramblings and Tribulations of a Software Developer";
+
+const today = DateTime.fromJSDate(new Date());
 
 /** @type import('@tyankatsu0105/types-gridsome').Config */
 module.exports = {
   siteName: siteName,
   siteUrl: "https://" + siteHostname,
   siteDescription,
+  metadata: {
+    build: {
+      today: today.toJSDate(),
+      year: today.year,
+      month: today.month,
+      day: today.day,
+      monthOfYear: today.monthLong,
+      dayOfWeek: today.toFormat("cccc"),
+    },
+  },
 
   configureWebpack: {
     plugins: [new VuetifyLoaderPlugin()],
@@ -42,12 +55,29 @@ module.exports = {
       },
     },
 
+    // {
+    //   use: "@gridsome/vue-remark",
+    //   options: {
+    //     typeName: "BlogPost", // Required
+    //     baseDir: "./posts", // Where .md files are located
+    //     template: "./src/templates/BlogPost.vue", // Optional
+    //     route: "/blog/:year/:month/:day/:slug",
+
+    //     refs: {
+    //       series: "Series",
+    //       tags: {
+    //         typeName: "Tag",
+    //         create: true,
+    //       },
+    //     },
+    //   },
+    // },
+
     {
-      use: "@gridsome/vue-remark",
+      use: "@gridsome/source-filesystem",
       options: {
-        typeName: "BlogPost", // Required
-        baseDir: "./posts", // Where .md files are located
-        template: "./src/templates/BlogPost.vue", // Optional
+        typeName: "BlogPost",
+        path: "./posts/**/*.md",
         route: "/blog/:year/:month/:day/:slug",
 
         refs: {
@@ -199,7 +229,7 @@ module.exports = {
     },
   ],
   templates: {
-    // BlogPost: "/blog/:year/:month/:day/:slug",
+    BlogPost: "/blog/:year/:month/:day/:slug",
   },
   transformers: {
     remark: {
