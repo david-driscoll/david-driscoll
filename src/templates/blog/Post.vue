@@ -1,6 +1,10 @@
 <template>
-  <blog-card :post="$page.post" :linkTo="false">
+  <blog-card :post="post" :linkTo="false" min-height="40vh">
     <v-container class="pa-0">
+      <v-row class="d-flex justify-space-around">
+        <v-col><g-link v-if="$page.prev" :to="$page.prev.path">Prev</g-link></v-col>
+        <v-col><g-link v-if="$page.next" :to="$page.next.path">Next</g-link></v-col>
+      </v-row>
       <v-row class="d-flex justify-space-around text-center">
         <v-col cols="12" md="4">
           <v-card>
@@ -24,13 +28,15 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import Layout from "../layouts/Default.vue";
-import BlogCard from "../components/BlogCard.vue";
+import Layout from "../../layouts/Default.vue";
+import BlogCard from "../../components/BlogCard.vue";
 export default defineComponent({
   components: { BlogCard },
   mounted() {},
-  setup() {
-    return {};
+  computed: {
+    post() {
+      return this.$page.post;
+    },
   },
 });
 </script>
@@ -39,7 +45,7 @@ export default defineComponent({
 </style>
 
 <page-query>
-query ($id: ID!) {
+query ($id: ID!, $next: ID, $prev: ID) {
   post: blogPost(id: $id) {
     id
     title
@@ -48,6 +54,18 @@ query ($id: ID!) {
     content
     description
     image { path }
+  }
+  next: blogPost(id: $next) {
+    id
+    title
+    date
+    path
+  }
+  prev: blogPost(id: $prev) {
+    id
+    title
+    date
+    path
   }
 }
 </page-query>

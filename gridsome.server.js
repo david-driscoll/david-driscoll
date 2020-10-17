@@ -59,6 +59,7 @@ function ensureImage(data, key) {
 function onBlogPost(data) {
   data.tags = data.tags ?? [];
   data.description = data.description ?? "";
+  data.path = `/blog${data.dateInfo.path}${data.slug}`;
 
   ensureImage(data, data.title);
 
@@ -144,8 +145,10 @@ module.exports = function(api) {
     // });
   });
 
-  function onCreateNode(data) {
-    // console.log(data);
+  function onPreCreateNode(data) {
+    if (data.date) {
+      data.dateInfo = createDateInfo(data.date);
+    }
     if (!data.slug) {
       if (data.title) {
         data.slug = slugify(data.title).toLowerCase();
@@ -154,14 +157,18 @@ module.exports = function(api) {
       } else {
         data.slug = slugify(data.id).toLowerCase();
       }
-      if (data.path && data.slug) {
-        data.path = data.path.replace(/\/slug/g, "/" + data.slug);
-      }
     }
   }
+  function onPostCreateNode(data) {
+    // console.log(data);
+    if (data.path && data.slug) {
+      data.path = data.path.replace(/\/slug/g, "/" + data.slug);
+    }
+  }
+  api.onCreateNode(onPreCreateNode);
   api.onCreateNode(onTypeCreated("BlogPost", onBlogPost));
   api.onCreateNode(onTypeCreated("Series", onSeries));
-  api.onCreateNode(onCreateNode);
+  api.onCreateNode(onPostCreateNode);
   // console.log(api);
   api.chainWebpack((config, { isServer }) => {
     if (isServer) {
@@ -175,14 +182,68 @@ module.exports = function(api) {
     // config.plugins.push(new VuetifyLoaderPlugin());
   });
 
-  api.createPages(({ createPage, graphql }) => {
+  api.createManagedPages(async ({ createPage, graphql }) => {
+
+  });
+
+  api.createPages(async ({ createPage, graphql }) => {
+    const result = await graphql(`#graphql
+      query {
+        posts: allBlogPost(
+          sort: { by: "date", order: ASC }
+          filter: { isFuture: { ne: true } }
+        ) @paginate {
+          edges {
+            node {
+              id
+              title
+              date
+              path
+              slug
+              dateInfo {
+                day
+                month
+                year
+                path
+              }
+            }
+          }
+        }
+      }
+    `);
+
+    const edges = result.data.posts.edges;
+    for (let i = 0; i < edges.length; i++) {
+      const node = edges[i].node;
+      const prev = edges[i - 1];
+      const next = edges[i + 1];
+      const path = `/blog${node.dateInfo.path}${node.slug}`;
+      console.log(node.date, path);
+
+      createPage({
+        path,
+        component: "./src/templates/blog/Post.vue",
+        context: {
+
+          id: node.id,
+          prev: prev ? prev.node.id : null,
+          next: next ? next.node.id : null,
+        },
+        queryVariables: {
+          id: node.id,
+          prev: prev ? prev.node.id : null,
+          next: next ? next.node.id : null,
+        },
+      });
+    }
+
     createPage({
       path: "/series/",
       component: "./src/templates/series/Summary.vue",
     });
     createPage({
       path: "/blog/",
-      component: "./src/templates/BlogList.vue",
+      component: "./src/templates/blog/List.vue",
     });
     // createPage({
     //   path: "/series/:id",
@@ -239,4 +300,18 @@ function xmur3(str) {
     h = Math.imul(h ^ (h >>> 13), 3266489909);
     return (h ^= h >>> 16) >>> 0;
   };
+}
+
+function createDateInfo(value) {
+  const date = typeof value === 'string' ? DateTime.fromISO(value) : DateTime.fromJSDate(value);
+  const month = date.toFormat('MM');
+  const day = date.toFormat('dd');
+  const year = date.year.toString();
+  const path = `/${date.year}/${month}/${day}/`;
+  return {
+    day,
+    month,
+    year,
+    path,
+  }
 }

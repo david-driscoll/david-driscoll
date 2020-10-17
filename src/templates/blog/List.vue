@@ -22,6 +22,7 @@
 
     <blog-card
       :post="post.node"
+      min-height="70vh"
       class="pa-2"
       contain
       position="top"
@@ -33,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import BlogCard from "../components/BlogCard.vue";
+import BlogCard from "../../components/BlogCard.vue";
 import { faCalendar } from "@fortawesome/pro-duotone-svg-icons";
 export default defineComponent({
   components: { BlogCard },

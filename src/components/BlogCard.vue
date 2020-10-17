@@ -25,10 +25,10 @@
 
     <v-container :fluid="fluid">
       <v-sheet rounded="lg">
-        <v-card min-height="60vh" rounded="lg" class="block">
+        <v-card :min-height="minHeight" rounded="lg" class="block">
           <posted-on
             :date="post.date"
-            class="float-right rounded-tr rounded-bl-xl rounded-tl-0"
+            class="float-right rounded-tr rounded-bl-xl rounded-tl-0 ml-2"
           />
           <v-card-text v-html="post.content" />
         </v-card>
@@ -54,6 +54,10 @@ export default defineComponent({
     fluid: {
       type: Boolean as PropType<boolean>,
       default: false,
+    },
+    minHeight: {
+      type: Number as PropType<number | undefined>,
+      required: false,
     },
     post: {
       type: Object as PropType<{

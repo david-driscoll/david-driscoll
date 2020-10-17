@@ -42,9 +42,9 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
    */
 
 
-  const isDark = localStorage.getItem("dark");
   let dark = false;
   try {
+  const isDark = localStorage.getItem("dark");
      dark = isDark
       ? isDark === "true"
       : window?.matchMedia("(prefers-color-scheme: dark)").matches === true;

@@ -11,6 +11,8 @@
         "page-query": "graphql",
         "static-query": "graphql"
     },
+    "editor.formatOnSave": false,
+    "vscode-graphql.showExecCodelens": true,
     "vscode-graphql.trace.server": "trace",
     "vscode-graphql.debug": true
 }

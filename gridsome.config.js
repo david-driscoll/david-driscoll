@@ -78,7 +78,6 @@ module.exports = {
       options: {
         typeName: "BlogPost",
         path: "./posts/**/*.md",
-        route: "/blog/:year/:month/:day/:slug",
 
         refs: {
           series: "Series",
@@ -229,7 +228,7 @@ module.exports = {
     },
   ],
   templates: {
-    BlogPost: "/blog/:year/:month/:day/:slug",
+    // BlogPost: "/blog/:year/:month/:day/:title",
   },
   transformers: {
     remark: {
