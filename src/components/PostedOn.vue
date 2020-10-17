@@ -38,9 +38,9 @@ export default defineComponent({
   setup(props, context) {
     const value = computed(() => {
       if (typeof props.date === "string") {
-        return DateTime.fromISO(props.date ?? new Date());
+        return DateTime.fromISO(props.date ?? new Date()).toUTC();
       }
-      return DateTime.fromJSDate(props.date ?? new Date());
+      return DateTime.fromJSDate(props.date ?? new Date()).toUTC();
     });
     return {
       dayOfWeek: computed(() => value.value.toFormat("ccc")),

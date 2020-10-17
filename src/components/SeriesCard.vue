@@ -155,11 +155,11 @@ export default defineComponent({
   components: { License },
   methods: {
     toDisplayDate(date: Date | string) {
-      const dt =
-        typeof date === "string"
-          ? DateTime.fromISO(date)
-          : DateTime.fromJSDate(date);
-      return dt.toUTC().toLocaleString(DateTime.DATE_HUGE);
+      const dt = (typeof date === "string"
+        ? DateTime.fromISO(date)
+        : DateTime.fromJSDate(date)
+      ).toUTC();
+      return dt.toLocaleString(DateTime.DATE_HUGE);
     },
   },
   setup(props, context) {

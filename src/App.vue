@@ -156,9 +156,7 @@ const image = getImage("App");
 export default defineComponent({
   setup(props, context) {
     const dark = ref(true);
-    const img = ref(image);
     const fab = ref(false);
-    provide("bgImage", img);
 
     onMounted(() => {
       const isDark = localStorage.getItem("dark");
@@ -168,7 +166,6 @@ export default defineComponent({
     });
 
     watch(dark, (x) => localStorage.setItem("dark", x.toString()));
-    watch(img, (x) => (img.value = x || image));
 
     return {
       dark,

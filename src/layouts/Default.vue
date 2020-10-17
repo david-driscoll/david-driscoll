@@ -1,5 +1,5 @@
 <template>
-  <v-img :src="image" v-if="image" class="pa-2" contain position="top">
+  <v-img v-once :src="image" v-if="image" class="pa-2" contain position="top">
     <v-container
       v-if="title || description"
       style="height: 15vw"

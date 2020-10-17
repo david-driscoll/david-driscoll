@@ -79,15 +79,6 @@ export default defineComponent({
     },
   },
   components: { License, PostedOn },
-  methods: {
-    toDisplayDate(date: Date | string) {
-      const dt =
-        typeof date === "string"
-          ? DateTime.fromISO(date)
-          : DateTime.fromJSDate(date);
-      return dt.toUTC().toLocaleString(DateTime.DATE_HUGE);
-    },
-  },
   setup(props, context) {
     return {
       show: ref(false),
