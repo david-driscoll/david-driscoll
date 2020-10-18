@@ -94,6 +94,19 @@ query ($page: Int) {
         content
         description
         image { path }
+        series
+        {
+          id
+          path
+          title
+          description
+        }
+        tags
+        {
+          title
+          path
+          count
+        }
       }
     }
   }

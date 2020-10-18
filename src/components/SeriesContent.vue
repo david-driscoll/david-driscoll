@@ -1,25 +1,24 @@
 <template>
-  <v-card class="mx-auto" max-width="800px">
+  <v-card class="mx-auto">
     <bg-image
       :image="series.image.path"
       :license="series.image.license"
       :style="{ 'min-height': '280px' }"
       class="align-end d-flex secondary--text pa-0"
     >
-      <g-link :to="series.path">
-        <v-card-title
-          :class="{
-            'white--text': true,
-            'rounded-tr-xl': true,
-            'primary': true,
-            'darken-4': false,
-            'accent-2': false,
-          }"
-          style="width: fit-content"
-        >
-          {{ series.title }}
-        </v-card-title>
-      </g-link>
+      <v-card-title
+        :class="{
+          'white--text': true,
+          'rounded-tr-xl': true,
+          primary: true,
+          'darken-4': false,
+          'accent-2': false,
+        }"
+        :to="series.path"
+        style="width: fit-content"
+      >
+        {{ series.title }}
+      </v-card-title>
     </bg-image>
 
     <v-card-subtitle> {{ series.description }} </v-card-subtitle>
@@ -40,7 +39,7 @@
             :class="{
               'white--text': true,
               'rounded-a-xl': true,
-              'primary': true,
+              primary: true,
               'darken-4': false,
               'accent-2': false,
             }"
@@ -54,6 +53,7 @@
               <sup>{{ toDisplayDate(post.date) }}</sup>
               <span v-if="post.description"><br />{{ post.description }}</span>
             </v-card-subtitle>
+            <card-tags :tags="post.tags" color="primary" class="accent" />
           </v-card>
         </v-timeline-item>
 
@@ -85,7 +85,7 @@
                 :class="{
                   'white--text': true,
                   'rounded-a-xl': true,
-                  'primary': true,
+                  primary: true,
                   'darken-4': false,
                   'accent-2': false,
                 }"
@@ -97,10 +97,11 @@
                   }"
                 >
                   <sup>{{ toDisplayDate(post.date) }}</sup>
-                  <span v-if="post.description"
-                    ><br />{{ post.description }}</span
-                  >
+                  <span v-if="post.description">
+                    <br />{{ post.description }}
+                  </span>
                 </v-card-subtitle>
+                <card-tags :tags="post.tags" color="primary" class="accent" />
               </v-card>
             </v-timeline-item>
           </div>
@@ -112,6 +113,7 @@
 
 <script lang="ts">
 import BgImage from "./BgImage.vue";
+import CardTags from "./CardTags.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 import { DateTime, FixedOffsetZone } from "luxon";
 export default defineComponent({
@@ -141,12 +143,16 @@ export default defineComponent({
           title: string;
           description: string;
           date: string;
+          tags: {
+            title: string;
+            path: string;
+          }[];
         }[]
       >,
       required: true,
     },
   },
-  components: { BgImage },
+  components: { BgImage, CardTags },
   methods: {
     toDisplayDate(date: Date | string) {
       const dt = (typeof date === "string"
@@ -166,11 +172,15 @@ export default defineComponent({
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 .license {
-  position: absolute;
   top: 0;
   right: 0;
-  padding: 0.25em 0.25em 0.5em 0.5em;
+  .theme--dark & {
+    background-color: black;
+  }
+  .theme--light & {
+    background-color: white;
+  }
 }
 </style>

@@ -2,12 +2,13 @@
   <v-container class="bg-image" fluid :style="backgroundStyle">
     <slot />
 
-    <license
-      v-if="license"
-      class="license rounded-bl-xl"
-      :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }"
-      :license="license"
-    />
+    <div class="license pa-1 rounded-bl-lg">
+      <license
+        v-if="license"
+        :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }"
+        :license="license"
+      />
+    </div>
   </v-container>
 </template>
 
@@ -17,8 +18,6 @@
 }
 .license {
   position: absolute;
-  top: 0;
-  right: 0;
   padding: 0.25em 0.25em 0.5em 0.5em;
 }
 </style>

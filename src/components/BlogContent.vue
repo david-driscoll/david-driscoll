@@ -1,5 +1,11 @@
 <template>
-  <bg-image :image="post.image.path" :license="post.image.license" position="top top" size="contain" class="pa-2">
+  <bg-image
+    :image="post.image.path"
+    :license="post.image.license"
+    position="top top"
+    size="contain"
+    class="pa-2"
+  >
     <v-container
       v-if="post.title || post.description"
       style="height: 15vw"
@@ -18,12 +24,20 @@
 
     <v-container :fluid="fluid">
       <v-sheet rounded="lg">
-        <v-card :min-height="minHeight" rounded="lg" class="block">
-          <posted-on
-            :date="post.date"
-            class="float-right rounded-tr rounded-bl-xl rounded-tl-0 ml-2"
+        <v-card :min-height="minHeight" rounded="lg" class="d-flex align-top flex-column justify-space-between">
+          <v-card-text class="block pa-0">
+            <posted-on
+              :date="post.date"
+              class="float-right rounded-tr rounded-bl-xl rounded-tl-0 ml-2"
+            />
+            <div v-html="post.content" class="pa-4" />
+          </v-card-text>
+          <card-tags
+            class="accent"
+            color="primary"
+            v-if="post.tags && post.tags.length > 0"
+            :tags="post.tags"
           />
-          <v-card-text v-html="post.content" />
         </v-card>
       </v-sheet>
 
@@ -38,6 +52,7 @@ import Default from "../layouts/Default.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 import { DateTime } from "luxon";
 import PostedOn from "./PostedOn.vue";
+import CardTags from "./CardTags.vue";
 import BgImage from "./BgImage.vue";
 import { getImagePath } from "../defaultImage";
 export default defineComponent({
@@ -69,11 +84,12 @@ export default defineComponent({
             original?: { name?: string; url: string };
           };
         };
+        tags: { path: string; title: string }[];
       }>,
       required: true,
     },
   },
-  components: { License, PostedOn, Default, BgImage },
+  components: { License, PostedOn, Default, BgImage, CardTags },
   setup(props, context) {
     return {
       show: ref(false),
@@ -84,11 +100,15 @@ export default defineComponent({
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 .license {
-  position: absolute;
   top: 0;
   right: 0;
-  padding: 0.25em 0.25em 0.5em 0.5em;
+  .theme--dark & {
+    background-color: black;
+  }
+  .theme--light & {
+    background-color: white;
+  }
 }
 </style>

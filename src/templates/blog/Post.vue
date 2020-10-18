@@ -21,18 +21,7 @@
       </v-row>
       <v-row class="d-flex justify-space-around text-center">
         <v-col cols="12" sm="6" md="4" v-if="series">
-          <g-link :to="series.path" class="white--text">
-            <v-card color="primary">
-              <v-card-title> Series: {{ series.title }} </v-card-title>
-              <bg-image
-                :image="series.image.path"
-                :license="series.image.license"
-                class="align-end d-flex secondary--text pa-0"
-                style="min-height: 80px"
-              >
-              </bg-image>
-            </v-card>
-          </g-link>
+          <series-card :series="series" />
         </v-col>
         <v-col cols="12" sm="6" md="4" v-if="false">
           <v-card>
@@ -53,9 +42,9 @@ import Layout from "../../layouts/Default.vue";
 import BlogContent from "../../components/BlogContent.vue";
 import BgImage from "../../components/BgImage.vue";
 import TagCloud from "../../components/TagCloud.vue";
-// import SeriesContent from "../../components/SeriesContent.vue";
+import SeriesCard from "../../components/SeriesCard.vue";
 export default defineComponent({
-  components: { BlogContent, BgImage, TagCloud },
+  components: { BlogContent, BgImage, SeriesCard, TagCloud },
   mounted() {},
   computed: {
     post(): any {

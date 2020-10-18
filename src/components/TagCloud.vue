@@ -22,7 +22,7 @@ import { defineComponent, ref, PropType } from "@vue/composition-api";
 import colors from 'vuetify/es5/util/colors'
 
 const rotations = [0, 1 / 8, 3 / 4, 7 / 8];
-const colorList = ['primary--text', 'secondary--text', 'info--text', 'accent--text', 'success--text' ];
+const colorList = [ 'info--text', 'primary--text', 'accent--text', 'success--text', 'secondary--text' ];
 
 export default defineComponent({
   components: { VueWordCloud },
