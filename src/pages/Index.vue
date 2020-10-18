@@ -1,6 +1,8 @@
 <template>
   <Layout
     :image="image"
+    size="contain"
+    position="top"
     :title="$static.metadata.siteName"
     :description="$static.metadata.siteDescription"
     overlay
@@ -116,7 +118,7 @@ query {
 
 <script>
 import { defineComponent } from "@vue/composition-api";
-import { getImage } from "../defaultImage";
+import { getImagePath } from "../defaultImage";
 import Layout from "../layouts/Default.vue";
 export default defineComponent({
   components: { Layout },
@@ -127,7 +129,7 @@ export default defineComponent({
   },
   computed: {
     image() {
-      return getImage("App");
+      return getImagePath("/");
     },
   },
   metaInfo() {

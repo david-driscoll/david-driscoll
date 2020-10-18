@@ -1,23 +1,17 @@
 <template>
   <v-card class="mx-auto" max-width="800px">
-    <v-img
-      contain
-      :src="series.image.path"
-      min-height="200px"
-      class="align-end secondary--text"
+    <bg-image
+      :image="series.image.path"
+      :license="series.image.license"
+      :style="{ 'min-height': '280px' }"
+      class="align-end d-flex secondary--text pa-0"
     >
-      <div
-        class="license rounded-bl-xl"
-        :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }"
-      >
-        <license v-if="series.image.license" :license="series.image.license" />
-      </div>
       <g-link :to="series.path">
         <v-card-title
           :class="{
             'white--text': true,
             'rounded-tr-xl': true,
-            'deep-purple': true,
+            'primary': true,
             'darken-4': false,
             'accent-2': false,
           }"
@@ -26,7 +20,7 @@
           {{ series.title }}
         </v-card-title>
       </g-link>
-    </v-img>
+    </bg-image>
 
     <v-card-subtitle> {{ series.description }} </v-card-subtitle>
     <v-card-text>
@@ -46,7 +40,7 @@
             :class="{
               'white--text': true,
               'rounded-a-xl': true,
-              'deep-purple': true,
+              'primary': true,
               'darken-4': false,
               'accent-2': false,
             }"
@@ -68,7 +62,7 @@
             class="flex-grow-1 transparent"
             style="margin-top: -4em; margin-left: 1.6em"
           >
-            <v-btn icon @click="show = !show" color="white" class="primary">
+            <v-btn icon @click="show = !show" color="white" class="secondary">
               <fa-icon :icon="show ? $icons.chevronUp : $icons.chevronDown" />
             </v-btn>
           </div>
@@ -91,7 +85,7 @@
                 :class="{
                   'white--text': true,
                   'rounded-a-xl': true,
-                  'deep-purple': true,
+                  'primary': true,
                   'darken-4': false,
                   'accent-2': false,
                 }"
@@ -117,9 +111,9 @@
 </template>
 
 <script lang="ts">
-import License from "./License.vue";
+import BgImage from "./BgImage.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
-import { DateTime } from "luxon";
+import { DateTime, FixedOffsetZone } from "luxon";
 export default defineComponent({
   props: {
     series: {
@@ -152,12 +146,12 @@ export default defineComponent({
       required: true,
     },
   },
-  components: { License },
+  components: { BgImage },
   methods: {
     toDisplayDate(date: Date | string) {
       const dt = (typeof date === "string"
-        ? DateTime.fromISO(date)
-        : DateTime.fromJSDate(date)
+        ? DateTime.fromISO(date, { zone: FixedOffsetZone.utcInstance })
+        : DateTime.fromJSDate(date, { zone: FixedOffsetZone.utcInstance })
       ).toUTC();
       return dt.toLocaleString(DateTime.DATE_HUGE);
     },

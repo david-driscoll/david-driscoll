@@ -1,5 +1,7 @@
 import { computed, inject, onUnmounted, Ref } from "@vue/composition-api";
 import trianglify from "trianglify";
+import { createHash } from "crypto";
+import { join } from "path";
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
@@ -9,7 +11,26 @@ const colors = ["PuOr", "PRGn", "PiYG", "RdBu", "RdYlBu", "Spectral", "RdYlGn"];
   (z) => !z.endsWith("s")
 );*/
 
-export function getImage(key: string) {
+function getImage(key: string) {
+  const data = getImageContent(key);
+  return `data:image/svg+xml;base64,${Buffer.from(data).toString("base64")}`;
+}
+
+export function getImagePath(key: string) {
+  return `/generated/${getImageName(key)}.svg`.toLowerCase();
+}
+
+export function getImageName(key: string) {
+  if (key === '/') key = 'App';
+  const hasher = createHash("sha256");
+  hasher.update(Buffer.from(key));
+  const hash = hasher.digest("hex");
+  // console.log(key, hash);
+  return hash;
+}
+
+export function getImageContent(key: string) {
+  if (key === '/') key = 'App';
   const seed = mulberry32(key)() * colors.length;
   const colorIndex = Math.floor(seed);
   let localColors = (trianglify as any).utils.colorbrewer[colors[colorIndex]];
@@ -17,12 +38,6 @@ export function getImage(key: string) {
   const c = localColors
     .slice(Math.floor(localColors.length / 2))
     .concat(localColors.slice(0, Math.ceil(localColors.length / 2)));
-  console.log(
-    localColors,
-    Math.floor(localColors.length / 2),
-    Math.ceil(localColors.length / 2),
-    c
-  );
 
   const image = trianglify({
     width: 3840,
@@ -33,8 +48,7 @@ export function getImage(key: string) {
     strokeWidth: 2,
     variance: 0.44,
   } as any) as any;
-  var data = image.toSVGTree().toString();
-  return `data:image/svg+xml;base64,${Buffer.from(data).toString("base64")}`;
+  return image.toSVGTree().toString();
 }
 
 function mulberry32(seed: any) {

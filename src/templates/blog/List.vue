@@ -1,25 +1,5 @@
 <template>
   <v-container fluid class="pa-0">
-    <!--
-      <v-img
-        :src="post.node.image.path"
-        aspect-ratio="16/4"
-        height="400"
-        class="pa-2 align-end"
-      >
-        <v-container>
-          <h1 v-html="post.node.title" />
-          <h3 v-html="post.node.description" />
-        </v-container>
-      </v-img>
-      <v-container>
-        <v-card min-height="60vh" rounded="lg">
-          <v-card-subtitle v-text="post.node.description" />
-          <v-card-text v-html="post.node.content" />
-        </v-card>
-      </v-container>
-      -->
-
     <blog-card
       :post="post.node"
       min-height="70vh"
@@ -29,6 +9,26 @@
       v-for="post in $page.posts.edges"
       :key="post.node.id"
     />
+    <v-container>
+      <v-row class="d-flex justify-space-between">
+        <v-col class="flex-grow-0 flex-shrink-0">
+          <g-link v-if="prev" :to="prev">
+            <v-btn link elevation="0">
+              <fa-icon :icon="$icons.prev" class="ma-2" />
+              Older
+            </v-btn>
+          </g-link>
+        </v-col>
+        <v-col class="flex-grow-0 flex-shrink-0">
+          <g-link v-if="next" :to="next">
+            <v-btn link elevation="0">
+              Newer
+              <fa-icon :icon="$icons.next" class="ma-2" />
+            </v-btn>
+          </g-link>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
@@ -40,6 +40,29 @@ export default defineComponent({
   components: { BlogCard },
   mounted() {},
   icons: { faCalendar },
+  computed: {
+    next() {
+      if (!this.$page.posts.pageInfo.hasNextPage) return undefined;
+      const page = this.$route?.params?.page;
+      const next = this.$page.posts.pageInfo.currentPage + 1;
+      const fullPath = this.$route.fullPath;
+      return page
+        ? fullPath.substring(0, fullPath.lastIndexOf(page.toString())) +
+            next.toString() +
+            "/"
+        : fullPath + "2/";
+    },
+    prev() {
+      if (!this.$page.posts.pageInfo.hasPreviousPage) return undefined;
+      const page = this.$route?.params?.page;
+      const prev = this.$page.posts.pageInfo.currentPage - 1;
+      const fullPath = this.$route.fullPath;
+      return (
+        fullPath.substring(0, fullPath.lastIndexOf(page)) +
+        (prev === 1 ? "" : prev.toString() + "/")
+      );
+    },
+  },
   setup() {
     return {};
   },
@@ -77,12 +100,8 @@ query ($page: Int) {
 }
 
 fragment pageInfo on PageInfo {
-  totalItems
   hasPreviousPage
   hasNextPage
-  isFirst
-  isLast
-  totalPages
   currentPage
 }
 </page-query>

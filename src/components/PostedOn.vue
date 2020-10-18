@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { DateTime } from "luxon";
+import { DateTime, FixedOffsetZone } from "luxon";
 import { defineComponent, ref, computed, PropType } from "@vue/composition-api";
 export default defineComponent({
   props: {
@@ -38,9 +38,9 @@ export default defineComponent({
   setup(props, context) {
     const value = computed(() => {
       if (typeof props.date === "string") {
-        return DateTime.fromISO(props.date ?? new Date()).toUTC();
+        return DateTime.fromISO(props.date ?? new Date(), { zone: FixedOffsetZone.utcInstance });
       }
-      return DateTime.fromJSDate(props.date ?? new Date()).toUTC();
+      return DateTime.fromJSDate(props.date ?? new Date(), { zone: FixedOffsetZone.utcInstance });
     });
     return {
       dayOfWeek: computed(() => value.value.toFormat("ccc")),

@@ -1,5 +1,5 @@
 <template>
-  <v-img v-once :src="image" v-if="image" class="pa-2" contain position="top">
+  <bg-image :image="image.path || image" :license="image.license" :position="position" :size="size">
     <v-container
       v-if="title || description"
       style="height: 15vw"
@@ -14,6 +14,7 @@
         <v-col class="flex-shrink-0 flex-grow-0" v-if="hasLeft">
           <slot name="left" />
         </v-col>
+
         <v-col class="flex-shrink-0 flex-grow-1">
           <v-container
             :style="{ 'margin-top': overlay ? '-2vw' : '' }"
@@ -31,14 +32,35 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-img>
+  </bg-image>
 </template>
 
 <script lang="ts">
+import BgImage from "../components/BgImage.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 export default defineComponent({
   props: {
-    image: String as PropType<string>,
+    position: {
+      type: String as PropType<string>,
+      required: false,
+      default: 'top'
+    },
+    size: {
+      type: String as PropType<"auto" | "contain" | "cover">,
+      required: false,
+      default: 'contain',
+      validator(value: "auto" | "contain" | "cover") {
+        return ["auto", "contain", "cover"].some((z) => z === value);
+      },
+    },
+    image: [Object, String] as PropType<string | {
+      path: string;
+      license?: {
+        attribution?: { name?: string; url: string };
+        author?: { name?: string; url: string };
+        original?: { name?: string; url: string };
+      };
+    }>,
     title: String as PropType<string>,
     description: String as PropType<string>,
     overlay: Boolean as PropType<boolean>,
@@ -47,6 +69,7 @@ export default defineComponent({
   setup() {
     return {};
   },
+  components: { BgImage },
   computed: {
     hasLeft(): boolean {
       return !!this.$slots.left;
@@ -67,4 +90,16 @@ query {
 </static-query>
 
 <style scoped>
+.image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  height: 15vw;
+}
+:root .container {
+  z-index: 5;
+  position: relative;
+}
 </style>

@@ -1,11 +1,14 @@
 // Server API makes it possible to hook into various parts of Gridsome
 // on server-side and add custom data to the GraphQL data layer.
 // Learn more: https://gridsome.org/docs/server-api/
-
+require("ts-node/register");
 const { default: slugify } = require("slugify");
 const nodeExternals = require("webpack-node-externals");
-const { DateTime } = require("luxon");
+const { DateTime, FixedOffsetZone } = require("luxon");
 const trianglify = require("trianglify");
+const fs = require("fs");
+const { getImageContent, getImagePath } = require("./src/defaultImage");
+const { join } = require("path");
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
@@ -18,29 +21,17 @@ const colors = ["PuOr", "PRGn", "PiYG", "RdBu", "RdYlBu", "Spectral", "RdYlGn"];
 function ensureImage(data, key) {
   if (!data.image) data.image = { path: undefined };
   if (!data.image.path) {
-    const seed = mulberry32(key)() * colors.length;
-    const colorIndex = Math.floor(seed);
-    let localColors = trianglify.utils.colorbrewer[colors[colorIndex]];
-
-    const c = localColors
-      .slice(Math.floor(localColors.length / 2))
-      .concat(localColors.slice(0, Math.ceil(localColors.length / 2)));
-    const image = trianglify({
-      width: 3840,
-      height: 960,
-      seed: key,
-      cellSize: 160,
-      xColors: c,
-      strokeWidth: 2,
-      variance: 0.44,
-    });
-
     data.description = data.description || "";
-    data.image.path = image.toSVG().toString();
-    data.image.path = `data:image/svg+xml;base64,${Buffer.from(
-      data.image.path
-    ).toString("base64")}`;
+    data.image.path = saveImage(key);
   }
+
+  return data.image;
+}
+
+function saveImage(key) {
+  const content = getImageContent(key);
+  fs.writeFileSync(join(__dirname, "static", getImagePath(key)), content);
+  return getImagePath(key);
 }
 
 /**
@@ -102,17 +93,7 @@ function onSeries(data) {
 
 /** @type import('@tyankatsu0105/types-gridsome').Server */
 module.exports = function(api) {
-  const graphql = api.graphql;
   api.loadSource((actions) => {
-    // Use the Data Store API here: https://gridsome.org/docs/data-store-api/
-    // console.log(
-    //   "// Use the Data Store API here: https://gridsome.org/docs/data-store-api/"
-    // );
-    // var items = actions.addCollection("BlogPost");
-    // console.log(items);
-    // const posts = actions.getCollection("BlogPost");
-    // posts.addReference("series", "Series");
-
     const blogs = actions.getCollection("BlogPost");
     const series = actions.getCollection("Series");
     for (const item of series.data()) {
@@ -127,22 +108,6 @@ module.exports = function(api) {
             )
         : null;
     }
-
-    // actions.addSchemaResolvers({
-    //   Series: {
-    //     hasPosts: {
-    //       type: "Boolean",
-    //       resolve(obj) {
-    //         // const items = actions.getCollection("Series");
-
-    //         // // console.log(Object.keys(items.constructor.prototype));
-    //         // console.log(items.data());
-    //         // blogs.data().some((z) => z.series === obj.id);
-    //         return blogs.data().some((z) => z.series === obj.id);
-    //       },
-    //     },
-    //   },
-    // });
   });
 
   function onPreCreateNode(data) {
@@ -160,15 +125,31 @@ module.exports = function(api) {
     }
   }
   function onPostCreateNode(data) {
-    // console.log(data);
     if (data.path && data.slug) {
       data.path = data.path.replace(/\/slug/g, "/" + data.slug);
     }
+    console.log(data.internal.typeName);
   }
   api.onCreateNode(onPreCreateNode);
   api.onCreateNode(onTypeCreated("BlogPost", onBlogPost));
   api.onCreateNode(onTypeCreated("Series", onSeries));
   api.onCreateNode(onPostCreateNode);
+
+  // api.beforeBuild((...args) => console.log('beforeBuild', args));
+  // api.afterBuild((...args) => console.log('afterBuild', args));
+  api.onBootstrap(async (...args) => {
+    const pages = await api._app.graphql(`
+      {
+        data: allPage(filter: {}) {
+          path
+        }
+      }
+    `);
+    for (const { path } of pages.data.data) {
+      saveImage(path);
+    }
+  });
+
   // console.log(api);
   api.chainWebpack((config, { isServer }) => {
     if (isServer) {
@@ -178,16 +159,11 @@ module.exports = function(api) {
         }),
       ]);
     }
-    // console.log(config.plugins);
-    // config.plugins.push(new VuetifyLoaderPlugin());
   });
 
-  api.createManagedPages(async ({ createPage, graphql }) => {
-
-  });
-
-  api.createPages(async ({ createPage, graphql }) => {
-    const result = await graphql(`#graphql
+  api.createPages(async ({ createPage, graphql, getCollection }) => {
+    const result = await graphql(`
+      #graphql
       query {
         posts: allBlogPost(
           sort: { by: "date", order: ASC }
@@ -220,15 +196,13 @@ module.exports = function(api) {
       const path = `/blog${node.dateInfo.path}${node.slug}`;
       console.log(node.date, path);
 
+      // const imageData = {};
+      // ensureImage(imageData);
+
       createPage({
         path,
         component: "./src/templates/blog/Post.vue",
-        context: {
-
-          id: node.id,
-          prev: prev ? prev.node.id : null,
-          next: next ? next.node.id : null,
-        },
+        context: {},
         queryVariables: {
           id: node.id,
           prev: prev ? prev.node.id : null,
@@ -240,10 +214,12 @@ module.exports = function(api) {
     createPage({
       path: "/series/",
       component: "./src/templates/series/Summary.vue",
+      context: {},
     });
     createPage({
       path: "/blog/",
       component: "./src/templates/blog/List.vue",
+      context: {},
     });
     // createPage({
     //   path: "/series/:id",
@@ -303,9 +279,12 @@ function xmur3(str) {
 }
 
 function createDateInfo(value) {
-  const date = typeof value === 'string' ? DateTime.fromISO(value) : DateTime.fromJSDate(value);
-  const month = date.toFormat('MM');
-  const day = date.toFormat('dd');
+  const date =
+    typeof value === "string"
+      ? DateTime.fromISO(value, { zone: FixedOffsetZone.utcInstance })
+      : DateTime.fromJSDate(value, { zone: FixedOffsetZone.utcInstance });
+  const month = date.toFormat("MM");
+  const day = date.toFormat("dd");
   const year = date.year.toString();
   const path = `/${date.year}/${month}/${day}/`;
   return {
@@ -313,5 +292,5 @@ function createDateInfo(value) {
     month,
     year,
     path,
-  }
+  };
 }

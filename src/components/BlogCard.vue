@@ -1,12 +1,5 @@
 <template>
-  <v-img :src="post.image.path" class="pa-2" contain position="top">
-    <div
-      class="license rounded-bl-xl"
-      :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }"
-    >
-      <license v-if="post.image.license" :license="post.image.license" />
-    </div>
-
+  <bg-image :image="post.image.path" :license="post.image.license" position="top top" size="contain" class="pa-2">
     <v-container
       v-if="post.title || post.description"
       style="height: 15vw"
@@ -36,15 +29,17 @@
 
       <slot />
     </v-container>
-  </v-img>
+  </bg-image>
 </template>
 
 <script lang="ts">
 import License from "./License.vue";
+import Default from "../layouts/Default.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 import { DateTime } from "luxon";
 import PostedOn from "./PostedOn.vue";
-import { getImage } from "../defaultImage";
+import BgImage from "./BgImage.vue";
+import { getImagePath } from "../defaultImage";
 export default defineComponent({
   props: {
     linkTo: {
@@ -56,7 +51,7 @@ export default defineComponent({
       default: false,
     },
     minHeight: {
-      type: Number as PropType<number | undefined>,
+      type: [String, Number] as PropType<number | string | undefined>,
       required: false,
     },
     post: {
@@ -78,7 +73,7 @@ export default defineComponent({
       required: true,
     },
   },
-  components: { License, PostedOn },
+  components: { License, PostedOn, Default, BgImage },
   setup(props, context) {
     return {
       show: ref(false),

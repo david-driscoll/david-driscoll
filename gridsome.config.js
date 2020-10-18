@@ -4,13 +4,13 @@
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
 const { VuetifyLoaderPlugin } = require("vuetify-loader");
-const { DateTime } = require("luxon");
+const { DateTime, FixedOffsetZone } = require("luxon");
 
 const siteName = "David Driscoll";
 const siteHostname = "www.daviddriscoll.me";
 const siteDescription = "Ramblings and Tribulations of a Software Developer";
 
-const today = DateTime.fromJSDate(new Date());
+const today = DateTime.fromJSDate(new Date(), { zone: FixedOffsetZone.utcInstance });
 
 /** @type import('@tyankatsu0105/types-gridsome').Config */
 module.exports = {

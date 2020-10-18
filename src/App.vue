@@ -151,8 +151,7 @@ import {
   faQuestionCircle,
   faBlog,
 } from "@fortawesome/pro-duotone-svg-icons";
-import { getImage } from "./defaultImage";
-const image = getImage("App");
+
 export default defineComponent({
   setup(props, context) {
     const dark = ref(true);
