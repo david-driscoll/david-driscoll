@@ -1,5 +1,10 @@
 <template>
-  <bg-image :image="image.path || image" :license="image.license" :position="position" :size="size">
+  <bg-image
+    :image="imagePath"
+    :license="licenseValue"
+    :position="position"
+    :size="size"
+  >
     <v-container
       v-if="title || description"
       style="height: 15vw"
@@ -43,24 +48,27 @@ export default defineComponent({
     position: {
       type: String as PropType<string>,
       required: false,
-      default: 'top'
+      default: "top",
     },
     size: {
       type: String as PropType<"auto" | "contain" | "cover">,
       required: false,
-      default: 'contain',
+      default: "contain",
       validator(value: "auto" | "contain" | "cover") {
         return ["auto", "contain", "cover"].some((z) => z === value);
       },
     },
-    image: [Object, String] as PropType<string | {
-      path: string;
-      license?: {
-        attribution?: { name?: string; url: string };
-        author?: { name?: string; url: string };
-        original?: { name?: string; url: string };
-      };
-    }>,
+    image: [Object, String] as PropType<
+      | string
+      | {
+          path: string;
+          license?: {
+            attribution?: { name?: string; url: string };
+            author?: { name?: string; url: string };
+            original?: { name?: string; url: string };
+          };
+        }
+    >,
     title: String as PropType<string>,
     description: String as PropType<string>,
     overlay: Boolean as PropType<boolean>,
@@ -71,6 +79,15 @@ export default defineComponent({
   },
   components: { BgImage },
   computed: {
+    imagePath(): string | undefined {
+      return typeof this.image === "string"
+        ? this.image
+        : this.image && this.image.path;
+    },
+    licenseValue(): object | undefined {
+      if (typeof this.image === "string") return undefined;
+      return this.image?.license;
+    },
     hasLeft(): boolean {
       return !!this.$slots.left;
     },
