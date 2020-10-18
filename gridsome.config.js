@@ -229,6 +229,7 @@ module.exports = {
   ],
   templates: {
     // BlogPost: "/blog/:year/:month/:day/:title",
+    Tag: '/tags/:title'
   },
   transformers: {
     remark: {

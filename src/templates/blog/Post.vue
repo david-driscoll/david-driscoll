@@ -6,46 +6,41 @@
           <g-link v-if="$page.prev" :to="$page.prev.path">
             <v-btn link elevation="0">
               <fa-icon :icon="$icons.prev" class="ma-2" />
-              Older: {{ $page.prev.title }}
+              Older<span class="d-none d-md-flex">: {{ $page.prev.title }}</span>
             </v-btn>
           </g-link>
         </v-col>
         <v-col class="flex-grow-0 flex-shrink-0">
           <g-link v-if="$page.next" :to="$page.next.path">
             <v-btn link elevation="0">
-              Newer: {{ $page.next.title }}
+              Newer<span class="d-none d-md-flex">: {{ $page.next.title }}</span>
               <fa-icon :icon="$icons.next" class="ma-2" />
             </v-btn>
           </g-link>
         </v-col>
       </v-row>
       <v-row class="d-flex justify-space-around text-center">
-        <v-col cols="12" md="4" v-if="series">
-          <series-card :series="series" :posts="seriesPosts" />
-          <v-card color="primary">
-            <g-link :to="series.path"  class="white--text">
-              <v-card-title>
-                Series: {{ series.title }}
-              </v-card-title>
-            </g-link>
-            <bg-image
-              :image="series.image.path"
-              :license="series.image.license"
-              class="align-end d-flex secondary--text pa-0"
-              style="min-height: 80px"
-            >
-            </bg-image>
-          </v-card>
+        <v-col cols="12" sm="6" md="4" v-if="series">
+          <g-link :to="series.path" class="white--text">
+            <v-card color="primary">
+              <v-card-title> Series: {{ series.title }} </v-card-title>
+              <bg-image
+                :image="series.image.path"
+                :license="series.image.license"
+                class="align-end d-flex secondary--text pa-0"
+                style="min-height: 80px"
+              >
+              </bg-image>
+            </v-card>
+          </g-link>
         </v-col>
-        <v-col cols="12" md="4">
+        <v-col cols="12" sm="6" md="4" v-if="false">
           <v-card>
             <v-card-text>You might like</v-card-text>
           </v-card>
         </v-col>
-        <v-col cols="12" md="4">
-          <v-card>
-            <v-card-text>tags</v-card-text>
-          </v-card>
+        <v-col cols="12" sm="6" md="4" v-if="post.tags.length > 0" class="pa-0">
+          <tag-cloud :tags="post.tags" style="min-height: 180px" />
         </v-col>
       </v-row>
     </v-container>
@@ -57,9 +52,10 @@ import { defineComponent } from "@vue/composition-api";
 import Layout from "../../layouts/Default.vue";
 import BlogCard from "../../components/BlogCard.vue";
 import BgImage from "../../components/BgImage.vue";
+import TagCloud from "../../components/TagCloud.vue";
 // import SeriesCard from "../../components/SeriesCard.vue";
 export default defineComponent({
-  components: { BlogCard, BgImage },
+  components: { BlogCard, BgImage, TagCloud },
   mounted() {},
   computed: {
     post(): any {
@@ -111,6 +107,12 @@ query ($id: ID!, $next: ID, $prev: ID) {
           }
         }
       }
+    }
+    tags
+    {
+      title
+      path
+      count
     }
   }
   next: blogPost(id: $next) {

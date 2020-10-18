@@ -24,18 +24,19 @@
 </style>
 
 <script lang="ts">
+import License from "./License.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 export default defineComponent({
   props: {
     position: {
       type: String as PropType<string>,
       required: false,
-      default: 'top'
+      default: "top",
     },
     size: {
       type: String as PropType<"auto" | "contain" | "cover">,
       required: false,
-      default: 'cover',
+      default: "cover",
       validator(value: "auto" | "contain" | "cover") {
         return ["auto", "contain", "cover"].some((z) => z === value);
       },
@@ -53,6 +54,7 @@ export default defineComponent({
       required: false,
     },
   },
+  components: { License },
   computed: {
     backgroundStyle(): object {
       return {

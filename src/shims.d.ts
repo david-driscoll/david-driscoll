@@ -6,3 +6,7 @@ declare module "vuetify/lib" {
   import a from "vuetify/types/lib";
   export * from a;
 }
+declare module 'vuewordcloud' {
+  import Vue from "vue";
+  export default Vue;
+}

@@ -1,6 +1,17 @@
 <template>
-  <div>test 123</div>
+  <div>{{ $page.tag }}</div>
 </template>
+
+<page-query>
+query ($id: ID!) {
+  tag: tag(id: $id) {
+    id
+    path
+    title
+    count
+  }
+}
+</page-query>
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";

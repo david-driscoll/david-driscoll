@@ -91,11 +91,33 @@ function onSeries(data) {
   // console.log(data);
 }
 
+/**
+ * @param {object} data
+ * @param {string} data.id
+ * @param {string} data.$uid
+ * @param {string} data.path
+ * @param {string} data.title
+ * @param {string} data.description
+ * @param {object} data.internal
+ * @param {string} data.internal.typeName
+ * @param {string} data.internal.origin
+ * @param {number} data.internal.timestamp
+ * @param {string} data.fileInfo.name
+ * @param {string} data.fileInfo.path
+ * @param {string} data.fileInfo.extension
+ * @param {string} data.fileInfo.directory
+ */
+function onTag(data) {
+  data.count = 1;
+  // console.log(data);
+}
+
 /** @type import('@tyankatsu0105/types-gridsome').Server */
 module.exports = function(api) {
   api.loadSource((actions) => {
     const blogs = actions.getCollection("BlogPost");
     const series = actions.getCollection("Series");
+    const tags = actions.getCollection("Tag");
     for (const item of series.data()) {
       item.hasPosts = blogs.data().some((z) => z.series === item.id);
       item.lastPost = item.hasPosts
@@ -107,6 +129,17 @@ module.exports = function(api) {
               new Date(0)
             )
         : null;
+    }
+
+    const counts = {};
+    for (const item of blogs.data()) {
+      for (const tag of item.tags) {
+        counts[tag] = (counts[tag] || 0) + 1;
+      }
+    }
+    console.log(counts);
+    for (const [key, value] of Object.entries(counts)) {
+      tags.getNodeById(key).count = value;
     }
   });
 
@@ -133,6 +166,7 @@ module.exports = function(api) {
   api.onCreateNode(onPreCreateNode);
   api.onCreateNode(onTypeCreated("BlogPost", onBlogPost));
   api.onCreateNode(onTypeCreated("Series", onSeries));
+  api.onCreateNode(onTypeCreated("Tag", onTag));
   api.onCreateNode(onPostCreateNode);
 
   // api.beforeBuild((...args) => console.log('beforeBuild', args));
@@ -219,6 +253,11 @@ module.exports = function(api) {
     createPage({
       path: "/blog/",
       component: "./src/templates/blog/List.vue",
+      context: {},
+    });
+    createPage({
+      path: "/tags/",
+      component: "./src/templates/tags/List.vue",
       context: {},
     });
     // createPage({
