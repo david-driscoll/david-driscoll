@@ -1,36 +1,52 @@
 <template>
-  <bg-image :image="post.image.path" :license="post.image.license" position="top top" size="contain" class="pa-2">
-    <v-container
-      v-if="post.title || post.description"
-      style="height: 15vw"
-      class="d-flex justify-center align-center flex-column white--text"
-    >
-      <g-link :to="post.path" class="white--text" v-if="linkTo">
-        <h1 v-html="post.title" />
-      </g-link>
-      <h1 v-html="post.title" v-else />
-      <h3
-        class="text-body-1"
-        v-html="post.description"
-        v-if="post.description"
-      />
-    </v-container>
-
-    <v-container :fluid="fluid">
-      <v-sheet rounded="lg">
-        <v-card :min-height="minHeight" rounded="lg" class="block">
-          <posted-on
-            :date="post.date"
-            class="float-right rounded-tr rounded-bl-xl rounded-tl-0 ml-2"
-          />
-          <v-card-text v-html="post.content" />
-        </v-card>
-      </v-sheet>
-
-      <slot />
-    </v-container>
-  </bg-image>
+  <v-card class="ma-4" :to="post.path">
+    <g-image :src="post.image.path" class="title-image" />
+    <posted-on
+      :date="post.date"
+      scale="0.6"
+      :style="{
+        right: datePosition === 'right' ? 0 : undefined,
+        left: datePosition === 'left' ? 0 : undefined,
+      }"
+      :class="{
+        'rounded-tl-lg': datePosition === 'right',
+        'rounded-tr-lg': datePosition === 'left',
+      }"
+    />
+    <v-card-title v-html="post.title" />
+    <v-card-subtitle
+      v-if="post.description"
+      v-html="post.description"
+    ></v-card-subtitle>
+    <v-card-subtitle>
+      <span v-if="post.series && post.series.title">
+        Series: {{ post.series.title }}
+      </span>
+      &nbsp;
+    </v-card-subtitle>
+    <v-card-text>
+      <v-container
+        v-if="post.title || post.description"
+        class="d-flex justify-center align-center flex-column white--text"
+      >
+      </v-container>
+    </v-card-text>
+    <card-tags v-if="post.tags.length > 0" :tags="post.tags" class="primary" color="secondary" />
+  </v-card>
 </template>
+
+<style lang="scss" scoped>
+.title-image {
+  height: 6em;
+  object-fit: cover;
+  width: 100%;
+  object-position: center;
+}
+.posted-on {
+  position: absolute;
+  top: 6em - 4.8em;
+}
+</style>
 
 <script lang="ts">
 import License from "./License.vue";
@@ -38,21 +54,18 @@ import Default from "../layouts/Default.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 import { DateTime } from "luxon";
 import PostedOn from "./PostedOn.vue";
+import CardTags from "./CardTags.vue";
 import BgImage from "./BgImage.vue";
 import { getImagePath } from "../defaultImage";
 export default defineComponent({
   props: {
-    linkTo: {
-      type: Boolean as PropType<boolean>,
-      default: true,
-    },
-    fluid: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-    minHeight: {
-      type: [String, Number] as PropType<number | string | undefined>,
+    datePosition: {
+      type: String as PropType<"right" | "left">,
+      default: "right",
       required: false,
+      validator(value) {
+        return value === "right" || value === "left";
+      },
     },
     post: {
       type: Object as PropType<{
@@ -61,6 +74,13 @@ export default defineComponent({
         title: string;
         description: string;
         content: string;
+        series: {
+          title: string;
+        };
+        tags: {
+          title: string;
+          path: string;
+        }[];
         image: {
           path: string;
           license?: {
@@ -73,8 +93,8 @@ export default defineComponent({
       required: true,
     },
   },
-  components: { License, PostedOn, Default, BgImage },
-  setup(props, context) {
+  components: { License, PostedOn, Default, BgImage, CardTags },
+  setup(props: any, context: any) {
     return {
       show: ref(false),
       visiblePosts: 2,
@@ -82,13 +102,3 @@ export default defineComponent({
   },
 });
 </script>
-
-
-<style lang="scss" scoped>
-.license {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.25em 0.25em 0.5em 0.5em;
-}
-</style>

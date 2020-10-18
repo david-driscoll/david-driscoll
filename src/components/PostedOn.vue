@@ -1,16 +1,24 @@
 <template>
   <div
     class="posted-on d-inline-flex flex-column flex-grow-0 flex-shrink-0"
-    :style="{ transform: 'scale(' + scale + ')' }"
-    style="height: 8em; width: 8em; overflow: hidden"
+    :style="scaleTransform"
+    style="overflow: hidden"
   >
     <v-sheet
       class="top justify-center align-center d-flex font-weight-bold"
       :class="textColor"
       color="primary"
     >
-      <div class="month mr-2" v-text="month"></div>
-      <div class="year" v-text="year"></div>
+      <div
+        class="month mr-2"
+        :style="{ 'font-size': this.scaleNumber * .9 + 'em' }"
+        v-text="month"
+      ></div>
+      <div
+        class="year"
+        :style="{ 'font-size': this.scaleNumber * .9 + 'em' }"
+        v-text="year"
+      ></div>
     </v-sheet>
     <v-sheet
       class="bottom justify-space-around flex-column align-center d-flex font-weight-bold"
@@ -18,8 +26,16 @@
       color="accent"
     >
       <!-- <fa-icon :icon="$icons.faCalendar" size="10x" /> -->
-      <div class="dayOfWeek flex-grow-0 mt-2" v-text="dayOfWeek"></div>
-      <div class="day flex-grow-1 mt-2" v-text="day"></div>
+      <div
+        class="dayOfWeek flex-grow-0 mt-2"
+        :style="{ 'font-size': this.scaleNumber * 1.25 + 'em' }"
+        v-text="dayOfWeek"
+      ></div>
+      <div
+        class="day flex-grow-1 mt-0"
+        :style="{ 'font-size': this.scaleNumber * 3.5 + 'em' }"
+        v-text="day"
+      ></div>
     </v-sheet>
   </div>
 </template>
@@ -31,16 +47,20 @@ export default defineComponent({
   props: {
     date: [Date, String] as PropType<Date | string>,
     scale: {
-      type: Number as PropType<number>,
+      type: [Number, String] as PropType<number>,
       default: 1,
     },
   },
   setup(props, context) {
     const value = computed(() => {
       if (typeof props.date === "string") {
-        return DateTime.fromISO(props.date ?? new Date(), { zone: FixedOffsetZone.utcInstance });
+        return DateTime.fromISO(props.date ?? new Date(), {
+          zone: FixedOffsetZone.utcInstance,
+        });
       }
-      return DateTime.fromJSDate(props.date ?? new Date(), { zone: FixedOffsetZone.utcInstance });
+      return DateTime.fromJSDate(props.date ?? new Date(), {
+        zone: FixedOffsetZone.utcInstance,
+      });
     });
     return {
       dayOfWeek: computed(() => value.value.toFormat("ccc")),
@@ -50,6 +70,9 @@ export default defineComponent({
     };
   },
   computed: {
+    scaleNumber(): number {
+      return +this.scale;
+    },
     textColor() {
       if (this.$vuetify.theme.dark) {
         return {
@@ -58,6 +81,15 @@ export default defineComponent({
       }
       return {
         "is-light": true,
+      };
+    },
+    scaleTransform(): object {
+      return {
+        height: 8 * this.scaleNumber + "em",
+        width: 8 * this.scaleNumber + "em",
+        // transform: `scale(${+this.scale}) translate(${+this.scale * 100}%, -${
+        //   +this.scale * 100
+        // }%)`,
       };
     },
   },
@@ -82,15 +114,12 @@ export default defineComponent({
   height: 72%;
 }
 .dayOfWeek {
-  font-size: 1.25em;
   font-weight: 900;
 }
 .day {
-  font-size: 3.5em;
   font-weight: 900;
 }
 .month {
-  font-size: 0.9em;
   font-weight: 900;
 }
 .year {

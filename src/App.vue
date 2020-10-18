@@ -1,5 +1,8 @@
 <template>
   <v-app>
+    <v-main>
+      <router-view />
+    </v-main>
     <v-app-bar app clipped-left dense hide-on-scroll>
       <v-spacer />
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
@@ -15,8 +18,28 @@
           <span v-if="$vuetify.breakpoint.smAndUp">&nbsp;Driscoll</span>
         </v-tab>
         <v-spacer />
-        <v-btn icon @click="dark = !dark">
-          <fa-icon :icon="dark ? $icons.faMoonStars : $icons.faSun" size="xs" />
+        <v-btn
+          link
+          elevation="0"
+          @click="dark = !dark"
+          class="rounded-0 v-tab"
+          min-height="100%"
+        >
+          <fa-icon
+            :icon="dark ? $icons.faMoonStars : $icons.faSun"
+            transform="shrink-2"
+          />
+
+          <span
+            class="ml-2"
+            v-if="$vuetify.breakpoint.mdAndUp && $vuetify.theme.dark"
+            >Light</span
+          >
+          <span
+            class="ml-2"
+            v-if="$vuetify.breakpoint.mdAndUp && !$vuetify.theme.dark"
+            >Dark</span
+          >
         </v-btn>
         <v-tab
           v-for="tab in tabs"
@@ -53,9 +76,6 @@
         </v-fab-transition>
       </template> -->
     </v-app-bar>
-    <v-main>
-      <router-view />
-    </v-main>
     <v-footer class="body-2">
       <v-container>
         <v-row>
@@ -150,6 +170,7 @@ import {
   faInfoCircle,
   faQuestionCircle,
   faBlog,
+  faLayerGroup
 } from "@fortawesome/pro-duotone-svg-icons";
 
 export default defineComponent({
@@ -175,6 +196,7 @@ export default defineComponent({
         { to: "/projects/", title: "Projects", icon: faHatWitch },
         { to: "/speaking/", title: "Speaking", icon: faPodium },
         { to: "/tags/", title: "Tags", icon: faTags },
+        { to: "/series/", title: "Series", icon: faLayerGroup },
       ],
       links: [
         {

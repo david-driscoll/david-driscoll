@@ -7,7 +7,7 @@ import type { Client } from '@tyankatsu0105/types-gridsome';
 // import "./assets/index.scss";
 
 import DefaultLayout from "~/layouts/Default.vue";
-import 'vuetify/dist/vuetify.min.css'
+// import 'vuetify/dist/vuetify.min.css'
 import VueCompositionAPI from '@vue/composition-api'
 import { iconPlugin } from './icons';
 import Vuetify from "vuetify/lib";

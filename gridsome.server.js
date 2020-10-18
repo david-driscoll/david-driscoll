@@ -30,7 +30,8 @@ function ensureImage(data, key) {
 
 function saveImage(key) {
   const content = getImageContent(key);
-  fs.writeFileSync(join(__dirname, "static", getImagePath(key)), content);
+  const file = fs.createWriteStream(join(__dirname, "static", getImagePath(key)));
+  content.createPNGStream().pipe(file);
   return getImagePath(key);
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <blog-card :post="post" :linkTo="false" min-height="40vh">
+  <blog-content :post="post" :linkTo="false" min-height="40vh">
     <v-container class="pa-0">
       <v-row class="d-flex justify-space-between">
         <v-col class="flex-grow-0 flex-shrink-0">
@@ -44,18 +44,18 @@
         </v-col>
       </v-row>
     </v-container>
-  </blog-card>
+  </blog-content>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
 import Layout from "../../layouts/Default.vue";
-import BlogCard from "../../components/BlogCard.vue";
+import BlogContent from "../../components/BlogContent.vue";
 import BgImage from "../../components/BgImage.vue";
 import TagCloud from "../../components/TagCloud.vue";
-// import SeriesCard from "../../components/SeriesCard.vue";
+// import SeriesContent from "../../components/SeriesContent.vue";
 export default defineComponent({
-  components: { BlogCard, BgImage, TagCloud },
+  components: { BlogContent, BgImage, TagCloud },
   mounted() {},
   computed: {
     post(): any {

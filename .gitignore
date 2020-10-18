@@ -7,3 +7,4 @@ dist
 .env
 .env.*
 /static/generated/*.svg
+/static/generated/*.png

@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col class="flex-shrink-0 flex-grow-1">
-        <series-card
+        <series-content
           v-for="series in $page.series.edges"
           :key="series.node.id"
           :series="series.node"
@@ -78,14 +78,14 @@ fragment pageInfo on PageInfo {
 
 <script lang="ts">
 import { DateTime } from "luxon";
-import SeriesCard from "../../components/SeriesCard.vue";
+import SeriesContent from "../../components/SeriesContent.vue";
 import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   setup() {
     return {};
   },
 
-  components: { SeriesCard },
+  components: { SeriesContent },
   metaInfo() {
     return {
       title: "Series",

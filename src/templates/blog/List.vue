@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-0">
-    <blog-card
+    <blog-content
       :post="post.node"
       min-height="70vh"
       class="pa-2"
@@ -34,10 +34,10 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import BlogCard from "../../components/BlogCard.vue";
+import BlogContent from "../../components/BlogContent.vue";
 import { faCalendar } from "@fortawesome/pro-duotone-svg-icons";
 export default defineComponent({
-  components: { BlogCard },
+  components: { BlogContent },
   mounted() {},
   icons: { faCalendar },
   computed: {
@@ -80,7 +80,7 @@ export default defineComponent({
 
 <page-query>
 query ($page: Int) {
-  posts: allBlogPost(perPage: 3, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
+  posts: allBlogPost(perPage: 3, page: $page, sort: { by:"date", order: ASC }, filter: { isFuture:{ne: true} }) @paginate {
     totalCount
     pageInfo {
       ...pageInfo

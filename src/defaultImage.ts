@@ -17,7 +17,7 @@ function getImage(key: string) {
 }
 
 export function getImagePath(key: string) {
-  return `/generated/${getImageName(key)}.svg`.toLowerCase();
+  return `/generated/${getImageName(key)}.png`.toLowerCase();
 }
 
 export function getImageName(key: string) {
@@ -48,7 +48,7 @@ export function getImageContent(key: string) {
     strokeWidth: 2,
     variance: 0.44,
   } as any) as any;
-  return image.toSVGTree().toString();
+  return image.toCanvas();
 }
 
 function mulberry32(seed: any) {
