@@ -54,7 +54,7 @@ for (const scheme of Object.values(schemes)) {
     for (var i = 0; i < scheme.length; i++) {
       const result = hexToRgb(scheme[i]);
       if (Math.floor(result.a) === 1) {
-        result.a = (47 + scale * i) / 255;
+        result.a = Math.min((47 + scale * i) / 255, 1);
       }
       scheme[i] = toRgba(result);
     }
