@@ -3,11 +3,7 @@
     <slot />
 
     <div class="license pa-1 rounded-bl-lg">
-      <license
-        v-if="license"
-        :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }"
-        :license="license"
-      />
+      <license v-if="license" :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }" :license="license" />
     </div>
   </v-container>
 </template>
@@ -41,8 +37,8 @@ export default defineComponent({
       },
     },
     image: {
-      type: String as PropType<string>,
-      required: true,
+      type: String as PropType<string | undefined>,
+      required: false,
     },
     license: {
       type: Object as PropType<{
@@ -56,6 +52,7 @@ export default defineComponent({
   components: { License },
   computed: {
     backgroundStyle(): object {
+      if (!this.image) return {};
       return {
         "background-image": "url(" + this.image + ")",
         // "background-size": "contain",

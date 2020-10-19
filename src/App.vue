@@ -9,7 +9,7 @@
       </v-progress-circular>
     </v-flex>
     <v-app-bar app clipped-left dense hide-on-scroll>
-      <v-progress-linear :active="loading" absolute bottom color="accent"></v-progress-linear>
+      <v-progress-linear absolute top :dark="dark" color="accent" :active="loading" indeterminate ></v-progress-linear>
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
         <v-tab to="/" exact :style="tabStyle" class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize">
           <span>David</span>
@@ -73,22 +73,6 @@ query {
 
 <script lang="ts">
 import { defineComponent, onBeforeMount, onMounted, ref, watch, inject, computed, provide } from "@vue/composition-api";
-// import { faKeybase, faLinkedin, faStackOverflow, faPatreon, faVimeo, faPaypal, faGithub, faTwitter, faTwitch } from "@fortawesome/free-brands-svg-icons";
-// import {
-//   faHomeAlt,
-//   faUserTag,
-//   faBook,
-//   faSun,
-//   faMoonStars,
-//   faTags,
-//   faHatWitch,
-//   faPodium,
-//   faExternalLinkAlt,
-//   faInfoCircle,
-//   faQuestionCircle,
-//   faBlog,
-//   faLayerGroup,
-// } from "@fortawesome/pro-duotone-svg-icons";
 
 import { faKeybase } from "@fortawesome/free-brands-svg-icons/faKeybase";
 import { faLinkedin } from "@fortawesome/free-brands-svg-icons/faLinkedin";
