@@ -56,7 +56,6 @@ import { DateTime } from "luxon";
 import PostedOn from "./PostedOn.vue";
 import CardTags from "./CardTags.vue";
 import BgImage from "./BgImage.vue";
-import { getImagePath } from "../defaultImage";
 export default defineComponent({
   props: {
     datePosition: {

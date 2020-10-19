@@ -53,7 +53,7 @@ function onBlogPost(data) {
   data.description = data.description || "";
   data.path = `/blog${data.dateInfo.path}${data.slug}`;
 
-  ensureImage(data, data.title);
+  ensureImage(data, data.title + data.dateInfo.path);
 
   let now = DateTime.utc();
   data.isFuture = DateTime.fromJSDate(data.date) > now;
