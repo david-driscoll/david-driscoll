@@ -1,15 +1,6 @@
 <template>
   <v-card-actions class="d-flex justify-center">
-    <v-chip
-      v-for="tag of tags"
-      :key="tag.path"
-      label
-      class="mx-2"
-      :to="tag.path"
-      v-text="tag.title"
-      small
-      :color="color"
-    />
+    <v-chip v-for="tag of tags" :key="tag.path" label class="mx-2" :to="tag.path" small :color="color">{{ tag.title }}</v-chip>
   </v-card-actions>
 </template>
 

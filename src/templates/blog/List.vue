@@ -80,7 +80,7 @@ export default defineComponent({
 
 <page-query>
 query ($page: Int) {
-  posts: allBlogPost(perPage: 3, page: $page, sort: { by:"date", order: ASC }, filter: { isFuture:{ne: true} }) @paginate {
+  posts: allBlogPost(perPage: 3, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
     totalCount
     pageInfo {
       ...pageInfo

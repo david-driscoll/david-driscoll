@@ -39,14 +39,14 @@ const schemes: { [key: string]: string[] } = {
   // Reds: ["#fff5f0", "#fee0d2", "#fcbba1", "#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d"],
   // Greys: ["#ffffff", "#f0f0f0", "#d9d9d9", "#bdbdbd", "#969696", "#737373", "#525252", "#252525", "#000000"],
   PuOr: ["#7f3b08", "#b35806df", "#e08214cf", "#fdb863af", "#fee0b62f", "#f7f7f72f", "#d8daeb2f", "#b2abd2af", "#8073accf", "#542788df", "#2d004b"],
-  BrBG: ["#543005", "#8c510adf", "#bf812dcf", "#dfc27daf", "#f6e8c32f", "#f5f5f52f", "#c7eae52f", "#80cdc1af", "#35978fcf", "#01665edf", "#003c30"],
+  // BrBG: ["#543005", "#8c510adf", "#bf812dcf", "#dfc27daf", "#f6e8c32f", "#f5f5f52f", "#c7eae52f", "#80cdc1af", "#35978fcf", "#01665edf", "#003c30"],
   // PRGn: ["#40004b", "#762a83df", "#9970abcf", "#c2a5cfaf", "#e7d4e82f", "#f7f7f72f", "#d9f0d32f", "#a6dba0af", "#5aae61cf", "#1b7837df", "#00441b"],
   // PiYG: ["#8e0152", "#c51b7ddf", "#de77aecf", "#f1b6daaf", "#fde0ef2f", "#f7f7f72f", "#e6f5d02f", "#b8e186af", "#7fbc41cf", "#4d9221df", "#276419"],
   RdBu: ["#67001f", "#b2182bdf", "#d6604dcf", "#f4a582af", "#fddbc72f", "#f7f7f72f", "#d1e5f02f", "#92c5deaf", "#4393c3cf", "#2166acdf", "#053061"],
   // RdGy: ["#67001f", "#b2182bdf", "#d6604dcf", "#f4a582af", "#fddbc72f", "#ffffff2f", "#e0e0e02f", "#bababaaf", "#878787cf", "#4d4d4ddf", "#1a1a1a"],
   RdYlBu: ["#a50026", "#d73027df", "#f46d43cf", "#fdae61af", "#fee0902f", "#ffffbf2f", "#e0f3f82f", "#abd9e9af", "#74add1cf", "#4575b4df", "#313695"],
   Spectral: ["#9e0142", "#d53e4fdf", "#f46d43cf", "#fdae61af", "#fee08b2f", "#ffffbf2f", "#e6f5982f", "#abdda4af", "#66c2a5cf", "#3288bddf", "#5e4fa2"],
-  RdYlGn: ["#a50026", "#d73027df", "#f46d43cf", "#fdae61af", "#fee08b2f", "#ffffbf2f", "#d9ef8b2f", "#a6d96aaf", "#66bd63cf", "#1a9850df", "#006837"]
+  // RdYlGn: ["#a50026", "#d73027df", "#f46d43cf", "#fdae61af", "#fee08b2f", "#ffffbf2f", "#d9ef8b2f", "#a6d96aaf", "#66bd63cf", "#1a9850df", "#006837"]
 };
 for (const scheme of Object.values(schemes)) {
   if (scheme.length == 9) {
@@ -80,8 +80,8 @@ function getImage(key: string) {
   return `data:image/svg+xml;base64,${Buffer.from(data).toString("base64")}`;
 }
 
-export function getImagePath(key: string) {
-  return `/generated/${getImageName(key)}.png`.toLowerCase();
+export function getImagePath(key: string, ext = 'svg') {
+  return `/generated/${getImageName(key)}.${ext}`.toLowerCase();
 }
 
 export function getImageName(key: string) {
@@ -104,13 +104,13 @@ export function getImageContent(key: string) {
     width: 3840,
     height: 960,
     seed: key,
-    cellSize: 160,
+    cellSize: 140,
     xColors: localColors,
     yColors: "match",
     strokeWidth: 2,
     variance: 0.44
   } as any) as any;
-  return image.toCanvas();
+  return image;
 }
 
 function mulberry32(seed: any) {

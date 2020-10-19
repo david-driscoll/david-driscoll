@@ -30,8 +30,9 @@ function ensureImage(data, key) {
 
 function saveImage(key) {
   const content = getImageContent(key);
-  const file = fs.createWriteStream(join(__dirname, "static", getImagePath(key)));
-  content.createPNGStream().pipe(file);
+  const file = fs.createWriteStream(join(__dirname, "static", getImagePath(key, 'png')));
+  content.toCanvas().createPNGStream().pipe(file);
+  fs.writeFileSync(join(__dirname, "static", getImagePath(key, 'svg')), content.toSVGTree().toString());
   return getImagePath(key);
 }
 

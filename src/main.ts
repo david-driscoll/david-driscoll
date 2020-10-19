@@ -7,10 +7,11 @@ import type { Client } from '@tyankatsu0105/types-gridsome';
 // import "./assets/index.scss";
 
 import DefaultLayout from "~/layouts/Default.vue";
-// import 'vuetify/dist/vuetify.min.css'
+import 'vuetify/dist/vuetify.min.css'
 import VueCompositionAPI from '@vue/composition-api'
 import { iconPlugin } from './icons';
-import Vuetify from "vuetify/lib";
+import Vuetify from "vuetify";
+// import Vuetify from "vuetify/lib";
 import { faArrowsAltV, faBars, faCaretDown, faCheck, faCheckCircle, faInfoSquare, faInfo, faCheckSquare, faChevronDown, faChevronUp, faChevronLeft, faChevronRight, faCircle, fad, faDotCircle, faEdit, faExclamation, faExclamationTriangle, faInfoCircle, faMinus, faMinusSquare, faPaperclip, faPlus, faSortUp, faSquare, faStar, faStarHalf, faStepBackward, faStepForward, faSync, faTimes, faTimesCircle } from "@fortawesome/pro-duotone-svg-icons";
 
 import colors from 'vuetify/es5/util/colors'
