@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
 import BlogContent from "../../components/BlogContent.vue";
-import { faCalendar } from "@fortawesome/pro-duotone-svg-icons";
+import { faCalendar } from "@fortawesome/pro-duotone-svg-icons/faCalendar";
 export default defineComponent({
   components: { BlogContent },
   mounted() {},

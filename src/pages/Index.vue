@@ -116,9 +116,8 @@ query {
 }
 </static-query>
 
-<script>
+<script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import { getImagePath } from "../defaultImage";
 import Layout from "../layouts/Default.vue";
 export default defineComponent({
   components: { Layout },
@@ -129,7 +128,7 @@ export default defineComponent({
   },
   computed: {
     image() {
-      return getImagePath("/");
+      return (this.$context as any).image.path;
     },
   },
   metaInfo() {

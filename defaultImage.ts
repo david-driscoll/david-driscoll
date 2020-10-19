@@ -99,7 +99,7 @@ export function getImageContent(key: string) {
   const colorIndex = Math.floor(seed);
   let localColors = schemes[colors[colorIndex]];
 
-  console.log(localColors);
+  // console.log(localColors);
   const image = trianglify({
     width: 3840,
     height: 960,

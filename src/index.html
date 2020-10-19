@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html ${htmlAttrs}>
+  <head>
+    ${head}
+    <style>
+      body {
+        background: white;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #121212;
+        }
+      }
+    </style>
+    <noscript>
+      <style type="text/css">
+        .no-js {
+          display: none !important;
+          visibility: hidden!important;
+        }
+      </style>
+    </noscript>
+  </head>
+
+  <body ${bodyAttrs}>
+    ${app} ${scripts}
+  </body>
+</html>

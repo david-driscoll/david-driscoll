@@ -4,10 +4,11 @@
 require("ts-node/register");
 const { default: slugify } = require("slugify");
 const nodeExternals = require("webpack-node-externals");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const { DateTime, FixedOffsetZone } = require("luxon");
 const trianglify = require("trianglify");
 const fs = require("fs");
-const { getImageContent, getImagePath } = require("./src/defaultImage");
+const { getImageContent, getImagePath } = require("./defaultImage");
 const { join } = require("path");
 
 // Changes here require a server restart.
@@ -30,9 +31,12 @@ function ensureImage(data, key) {
 
 function saveImage(key) {
   const content = getImageContent(key);
-  const file = fs.createWriteStream(join(__dirname, "static", getImagePath(key, 'png')));
-  content.toCanvas().createPNGStream().pipe(file);
-  fs.writeFileSync(join(__dirname, "static", getImagePath(key, 'svg')), content.toSVGTree().toString());
+  const file = fs.createWriteStream(join(__dirname, "static", getImagePath(key, "png")));
+  content
+    .toCanvas()
+    .createPNGStream()
+    .pipe(file);
+  fs.writeFileSync(join(__dirname, "static", getImagePath(key, "svg")), content.toSVGTree().toString());
   return getImagePath(key);
 }
 
@@ -55,12 +59,15 @@ function onBlogPost(data) {
   data.path = `/blog${data.dateInfo.path}${data.slug}`;
 
   ensureImage(data, data.title + data.dateInfo.path);
+  if (data.context && data.context.image) {
+    data.context.image = { ...data.image };
+  }
 
   let now = DateTime.utc();
   data.isFuture = DateTime.fromJSDate(data.date) > now;
 
   var parts = data.internal.origin.split(/[\/|\\]/g);
-  var series = parts.filter((part) => part.startsWith("$series"));
+  var series = parts.filter(part => part.startsWith("$series"));
   if (series.length) {
     data.series = series[0].substring("$series".length);
     if (data.series.startsWith("-")) data.series = data.series.substring(1);
@@ -116,20 +123,17 @@ function onTag(data) {
 
 /** @type import('@tyankatsu0105/types-gridsome').Server */
 module.exports = function(api) {
-  api.loadSource((actions) => {
+  api.loadSource(actions => {
     const blogs = actions.getCollection("BlogPost");
     const series = actions.getCollection("Series");
     const tags = actions.getCollection("Tag");
     for (const item of series.data()) {
-      item.hasPosts = blogs.data().some((z) => z.series === item.id);
+      item.hasPosts = blogs.data().some(z => z.series === item.id);
       item.lastPost = item.hasPosts
         ? blogs
             .data()
-            .filter((z) => z.series === item.id)
-            .reduce(
-              (acc, v) => (acc.date > v.date ? acc.date : v.date),
-              new Date(0)
-            )
+            .filter(z => z.series === item.id)
+            .reduce((acc, v) => (acc.date > v.date ? acc.date : v.date), new Date(0))
         : null;
     }
 
@@ -171,29 +175,25 @@ module.exports = function(api) {
   api.onCreateNode(onTypeCreated("Tag", onTag));
   api.onCreateNode(onPostCreateNode);
 
-  // api.beforeBuild((...args) => console.log('beforeBuild', args));
-  // api.afterBuild((...args) => console.log('afterBuild', args));
-  api.onBootstrap(async (...args) => {
-    const pages = await api._app.graphql(`
-      {
-        data: allPage(filter: {}) {
-          path
-        }
-      }
-    `);
-    for (const { path } of pages.data.data) {
-      saveImage(path);
+  api._app.pages.hooks.createPage.tap("Gridsome", page => {
+    if (page.path) {
+      page.context = page.context || {};
+      ensureImage(page.context, page.path);
     }
+    return page;
   });
 
   // console.log(api);
-  api.chainWebpack((config, { isServer }) => {
+  api.chainWebpack((config, { isServer, isProd }) => {
     if (isServer) {
       config.externals([
         nodeExternals({
-          allowlist: [/^vuetify/],
-        }),
+          allowlist: [/^vuetify/]
+        })
       ]);
+    }
+    if (isProd) {
+      config.plugin("BundleAnalyzerPlugin").use(BundleAnalyzerPlugin, [{ analyzerMode: "static" }]);
     }
   });
 
@@ -201,10 +201,7 @@ module.exports = function(api) {
     const result = await graphql(`
       #graphql
       query {
-        posts: allBlogPost(
-          sort: { by: "date", order: ASC }
-          filter: { isFuture: { ne: true } }
-        ) @paginate {
+        posts: allBlogPost(sort: { by: "date", order: ASC }, filter: { isFuture: { ne: true } }) @paginate {
           edges {
             node {
               id
@@ -242,25 +239,25 @@ module.exports = function(api) {
         queryVariables: {
           id: node.id,
           prev: prev ? prev.node.id : null,
-          next: next ? next.node.id : null,
-        },
+          next: next ? next.node.id : null
+        }
       });
     }
 
     createPage({
       path: "/series/",
       component: "./src/templates/series/Summary.vue",
-      context: {},
+      context: {}
     });
     createPage({
       path: "/blog/",
       component: "./src/templates/blog/List.vue",
-      context: {},
+      context: {}
     });
     createPage({
       path: "/tags/",
       component: "./src/templates/tags/List.vue",
-      context: {},
+      context: {}
     });
     // createPage({
     //   path: "/series/:id",
@@ -293,37 +290,8 @@ function onTypeCreated(typeName, fn) {
   }
 }
 
-function mulberry32(seed) {
-  if (!seed) {
-    seed = Math.random().toString(36);
-  } // support no-seed usage
-  var a = xmur3(seed)();
-  return function() {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    var t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function xmur3(str) {
-  for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
-    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
-  }
-  return function() {
-    h = Math.imul(h ^ (h >>> 16), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    return (h ^= h >>> 16) >>> 0;
-  };
-}
-
 function createDateInfo(value) {
-  const date =
-    typeof value === "string"
-      ? DateTime.fromISO(value, { zone: FixedOffsetZone.utcInstance })
-      : DateTime.fromJSDate(value, { zone: FixedOffsetZone.utcInstance });
+  const date = typeof value === "string" ? DateTime.fromISO(value, { zone: FixedOffsetZone.utcInstance }) : DateTime.fromJSDate(value, { zone: FixedOffsetZone.utcInstance });
   const month = date.toFormat("MM");
   const day = date.toFormat("dd");
   const year = date.year.toString();
@@ -332,6 +300,6 @@ function createDateInfo(value) {
     day,
     month,
     year,
-    path,
+    path
   };
 }

@@ -1,80 +1,32 @@
 <template>
-  <v-app>
+  <v-app :class="{ 'ssr-loading': isServer }">
     <v-main>
       <router-view />
     </v-main>
+    <v-flex v-if="isServer" style="height: 100%; width: 100%" class="d-flex justify-center align-center ssr-loader no-js">
+      <v-progress-circular size="400" :width="10" indeterminate>
+        <span class="headline">Loading</span>
+      </v-progress-circular>
+    </v-flex>
     <v-app-bar app clipped-left dense hide-on-scroll>
-      <v-spacer />
+      <v-progress-linear :active="loading" absolute bottom color="accent"></v-progress-linear>
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
-        <v-tab
-          to="/"
-          g-link
-          exact
-          :style="tabStyle"
-          class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize"
-        >
-          <!-- <fa-icon class="mx-2" fixedWidth :icon="$icons.faHomeAlt" /> -->
+        <v-tab to="/" exact :style="tabStyle" class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize">
           <span>David</span>
           <span v-if="$vuetify.breakpoint.smAndUp">&nbsp;Driscoll</span>
         </v-tab>
         <v-spacer />
-        <v-btn
-          link
-          elevation="0"
-          @click="dark = !dark"
-          class="rounded-0 v-tab"
-          min-height="100%"
-        >
-          <fa-icon
-            :icon="dark ? $icons.faMoonStars : $icons.faSun"
-            transform="shrink-2"
-          />
+        <v-btn link elevation="0" @click="dark = !dark" class="rounded-0 v-tab no-js" min-height="100%">
+          <fa-icon :icon="dark ? $icons.faMoonStars : $icons.faSun" transform="shrink-2" />
 
-          <span
-            class="ml-2"
-            v-if="$vuetify.breakpoint.mdAndUp && $vuetify.theme.dark"
-            >Light</span
-          >
-          <span
-            class="ml-2"
-            v-if="$vuetify.breakpoint.mdAndUp && !$vuetify.theme.dark"
-            >Dark</span
-          >
+          <span class="ml-2" v-if="$vuetify.breakpoint.mdAndUp && $vuetify.theme.dark">Light</span>
+          <span class="ml-2" v-if="$vuetify.breakpoint.mdAndUp && !$vuetify.theme.dark">Dark</span>
         </v-btn>
-        <v-tab
-          v-for="tab in tabs"
-          :to="tab.to"
-          :key="tab.to"
-          exact
-          :style="tabStyle"
-          :class="{ 'flex-column': $vuetify.breakpoint.smAndDown }"
-        >
-          <fa-icon
-            fixedWidth
-            :icon="tab.icon"
-            transform="shrink-4"
-            v-if="tab.icon"
-          />
+        <v-tab v-for="tab in tabs" :to="tab.to" :key="tab.to" exact :style="tabStyle" :class="{ 'flex-column': $vuetify.breakpoint.smAndDown }">
+          <fa-icon fixedWidth :icon="tab.icon" transform="shrink-4" v-if="tab.icon" />
           <span>{{ tab.title }}</span>
         </v-tab>
       </v-tabs>
-      <!-- <template v-slot:extension v-if="$vuetify.breakpoint.mobile">
-        <v-fab-transition>
-          <v-btn
-            fab
-            absolute
-            bottom
-            right
-            @click="dark = !dark"
-            color="secondary"
-          >
-            <fa-icon
-              :icon="dark ? $icons.faMoonStars : $icons.faSun"
-              size="xs"
-            />
-          </v-btn>
-        </v-fab-transition>
-      </template> -->
     </v-app-bar>
     <v-footer class="body-2">
       <v-container>
@@ -88,33 +40,17 @@
           <v-col cols="12" class="d-flex justify-space-around">
             <v-tooltip top v-for="s in social" :key="s.url">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  fab
-                  :href="s.url"
-                  target="_blank"
-                  :dark="dark"
-                  small
-                  :color="
-                    (s.blackWhite &&
-                      ($vuetify.theme.dark ? 'white' : 'black')) ||
-                    s.buttonColor
-                  "
-                >
+                <v-btn v-bind="attrs" v-on="on" fab :href="s.url" target="_blank" :dark="dark" small :color="(s.blackWhite && ($vuetify.theme.dark ? 'white' : 'black')) || s.buttonColor">
                   <fa-icon
                     :icon="s.icon"
                     :class="{
-                      'white--text':
-                        (s.blackWhite && !$vuetify.theme.dark) || !s.blackWhite,
+                      'white--text': (s.blackWhite && !$vuetify.theme.dark) || !s.blackWhite,
                       'black--text': s.blackWhite && $vuetify.theme.dark,
                     }"
                   />
                 </v-btn>
               </template>
-              <span
-                v-text="s.username ? `${s.title} (${s.username})` : s.title"
-              ></span>
+              <span v-text="s.username ? `${s.title} (${s.username})` : s.title"></span>
             </v-tooltip>
           </v-col>
         </v-row>
@@ -136,58 +72,80 @@ query {
 </static-query>
 
 <script lang="ts">
-import {
-  defineComponent,
-  onBeforeMount,
-  onMounted,
-  ref,
-  watch,
-  inject,
-  computed,
-  provide,
-} from "@vue/composition-api";
-import {
-  faKeybase,
-  faLinkedin,
-  faStackOverflow,
-  faPatreon,
-  faVimeo,
-  faPaypal,
-  faGithub,
-  faTwitter,
-  faTwitch,
-} from "@fortawesome/free-brands-svg-icons";
-import {
-  faHomeAlt,
-  faUserTag,
-  faBook,
-  faSun,
-  faMoonStars,
-  faTags,
-  faHatWitch,
-  faPodium,
-  faExternalLinkAlt,
-  faInfoCircle,
-  faQuestionCircle,
-  faBlog,
-  faLayerGroup
-} from "@fortawesome/pro-duotone-svg-icons";
+import { defineComponent, onBeforeMount, onMounted, ref, watch, inject, computed, provide } from "@vue/composition-api";
+// import { faKeybase, faLinkedin, faStackOverflow, faPatreon, faVimeo, faPaypal, faGithub, faTwitter, faTwitch } from "@fortawesome/free-brands-svg-icons";
+// import {
+//   faHomeAlt,
+//   faUserTag,
+//   faBook,
+//   faSun,
+//   faMoonStars,
+//   faTags,
+//   faHatWitch,
+//   faPodium,
+//   faExternalLinkAlt,
+//   faInfoCircle,
+//   faQuestionCircle,
+//   faBlog,
+//   faLayerGroup,
+// } from "@fortawesome/pro-duotone-svg-icons";
+
+import { faKeybase } from "@fortawesome/free-brands-svg-icons/faKeybase";
+import { faLinkedin } from "@fortawesome/free-brands-svg-icons/faLinkedin";
+import { faStackOverflow } from "@fortawesome/free-brands-svg-icons/faStackOverflow";
+import { faPatreon } from "@fortawesome/free-brands-svg-icons/faPatreon";
+import { faVimeo } from "@fortawesome/free-brands-svg-icons/faVimeo";
+import { faPaypal } from "@fortawesome/free-brands-svg-icons/faPaypal";
+import { faGithub } from "@fortawesome/free-brands-svg-icons/faGithub";
+import { faTwitter } from "@fortawesome/free-brands-svg-icons/faTwitter";
+import { faTwitch } from "@fortawesome/free-brands-svg-icons/faTwitch";
+
+import { faHomeAlt } from "@fortawesome/pro-duotone-svg-icons/faHomeAlt";
+import { faUserTag } from "@fortawesome/pro-duotone-svg-icons/faUserTag";
+import { faBook } from "@fortawesome/pro-duotone-svg-icons/faBook";
+import { faSun } from "@fortawesome/pro-duotone-svg-icons/faSun";
+import { faMoonStars } from "@fortawesome/pro-duotone-svg-icons/faMoonStars";
+import { faTags } from "@fortawesome/pro-duotone-svg-icons/faTags";
+import { faHatWitch } from "@fortawesome/pro-duotone-svg-icons/faHatWitch";
+import { faPodium } from "@fortawesome/pro-duotone-svg-icons/faPodium";
+import { faExternalLinkAlt } from "@fortawesome/pro-duotone-svg-icons/faExternalLinkAlt";
+import { faInfoCircle } from "@fortawesome/pro-duotone-svg-icons/faInfoCircle";
+import { faQuestionCircle } from "@fortawesome/pro-duotone-svg-icons/faQuestionCircle";
+import { faBlog } from "@fortawesome/pro-duotone-svg-icons/faBlog";
+import { faLayerGroup } from "@fortawesome/pro-duotone-svg-icons/faLayerGroup";
 
 export default defineComponent({
+  mounted() {
+    this.$router.beforeEach((to, from, next) => {
+      if (!to.hash && typeof document !== "undefined") {
+        this.loading = true;
+      }
+      next();
+    });
+
+    this.$router.afterEach((to, from) => {
+      if (!to.hash && typeof document !== "undefined") {
+        this.loading = false;
+      }
+    });
+  },
   setup(props, context) {
     const dark = ref(true);
     const fab = ref(false);
+    const loaded = ref(false);
+    const loading = ref(false);
 
     onMounted(() => {
       const isDark = localStorage.getItem("dark");
-      dark.value = isDark
-        ? isDark === "true"
-        : window?.matchMedia("(prefers-color-scheme: dark)").matches === true;
+      loaded.value = true;
+      dark.value = isDark ? isDark === "true" : window?.matchMedia("(prefers-color-scheme: dark)").matches === true;
     });
 
     watch(dark, (x) => localStorage.setItem("dark", x.toString()));
 
     return {
+      loaded,
+      loading,
       dark,
       fab,
       tabs: [
@@ -252,6 +210,9 @@ export default defineComponent({
     };
   },
   computed: {
+    isServer() {
+      return process.env.VUE_ENV === "server" || !this.loaded;
+    },
     tabStyle() {
       if (this.$vuetify.breakpoint.mobile) return {};
       return {
@@ -321,13 +282,38 @@ export default defineComponent({
     --fa-secondary-color: rgb(236, 189, 100);
   }
 }
-
-/*
-.v-pagination__item
- */
 </style>
 
 <style scoped>
+.ssr-loader {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+.ssr-loader {
+  color: rgb(62, 53, 188);
+  caret-color: rgb(62, 53, 188);
+}
+@media (prefers-color-scheme: dark) {
+  .ssr-loader {
+    color: rgb(127, 122, 196);
+    caret-color: rgb(127, 122, 196);
+  }
+}
+
+.ssr-loader,
+.ssr-loading {
+  background: white !important;
+}
+@media (prefers-color-scheme: dark) {
+  .ssr-loader,
+  .ssr-loading {
+    background: #121212 !important;
+  }
+}
 /* .menu-icon {
   position: absolute;
   left: 2em;

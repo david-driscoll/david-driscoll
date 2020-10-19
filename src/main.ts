@@ -7,12 +7,42 @@ import type { Client } from '@tyankatsu0105/types-gridsome';
 // import "./assets/index.scss";
 
 import DefaultLayout from "~/layouts/Default.vue";
-import 'vuetify/dist/vuetify.min.css'
+// import 'vuetify/dist/vuetify.min.css'
 import VueCompositionAPI from '@vue/composition-api'
 import { iconPlugin } from './icons';
-import Vuetify from "vuetify";
-// import Vuetify from "vuetify/lib";
-import { faArrowsAltV, faBars, faCaretDown, faCheck, faCheckCircle, faInfoSquare, faInfo, faCheckSquare, faChevronDown, faChevronUp, faChevronLeft, faChevronRight, faCircle, fad, faDotCircle, faEdit, faExclamation, faExclamationTriangle, faInfoCircle, faMinus, faMinusSquare, faPaperclip, faPlus, faSortUp, faSquare, faStar, faStarHalf, faStepBackward, faStepForward, faSync, faTimes, faTimesCircle } from "@fortawesome/pro-duotone-svg-icons";
+// import Vuetify from "vuetify";
+import Vuetify from "vuetify/lib";
+import { faArrowsAltV } from "@fortawesome/pro-duotone-svg-icons/faArrowsAltV";
+import { faBars } from "@fortawesome/pro-duotone-svg-icons/faBars";
+import { faCaretDown } from "@fortawesome/pro-duotone-svg-icons/faCaretDown";
+import { faCheck } from "@fortawesome/pro-duotone-svg-icons/faCheck";
+import { faCheckCircle } from "@fortawesome/pro-duotone-svg-icons/faCheckCircle";
+import { faInfoSquare } from "@fortawesome/pro-duotone-svg-icons/faInfoSquare";
+import { faInfo } from "@fortawesome/pro-duotone-svg-icons/faInfo";
+import { faCheckSquare } from "@fortawesome/pro-duotone-svg-icons/faCheckSquare";
+import { faChevronDown } from "@fortawesome/pro-duotone-svg-icons/faChevronDown";
+import { faChevronUp } from "@fortawesome/pro-duotone-svg-icons/faChevronUp";
+import { faChevronLeft } from "@fortawesome/pro-duotone-svg-icons/faChevronLeft";
+import { faChevronRight } from "@fortawesome/pro-duotone-svg-icons/faChevronRight";
+import { faCircle } from "@fortawesome/pro-duotone-svg-icons/faCircle";
+import { faDotCircle } from "@fortawesome/pro-duotone-svg-icons/faDotCircle";
+import { faEdit } from "@fortawesome/pro-duotone-svg-icons/faEdit";
+import { faExclamation } from "@fortawesome/pro-duotone-svg-icons/faExclamation";
+import { faExclamationTriangle } from "@fortawesome/pro-duotone-svg-icons/faExclamationTriangle";
+import { faInfoCircle } from "@fortawesome/pro-duotone-svg-icons/faInfoCircle";
+import { faMinus } from "@fortawesome/pro-duotone-svg-icons/faMinus";
+import { faMinusSquare } from "@fortawesome/pro-duotone-svg-icons/faMinusSquare";
+import { faPaperclip } from "@fortawesome/pro-duotone-svg-icons/faPaperclip";
+import { faPlus } from "@fortawesome/pro-duotone-svg-icons/faPlus";
+import { faSortUp } from "@fortawesome/pro-duotone-svg-icons/faSortUp";
+import { faSquare } from "@fortawesome/pro-duotone-svg-icons/faSquare";
+import { faStar } from "@fortawesome/pro-duotone-svg-icons/faStar";
+import { faStarHalf } from "@fortawesome/pro-duotone-svg-icons/faStarHalf";
+import { faStepBackward } from "@fortawesome/pro-duotone-svg-icons/faStepBackward";
+import { faStepForward } from "@fortawesome/pro-duotone-svg-icons/faStepForward";
+import { faSync } from "@fortawesome/pro-duotone-svg-icons/faSync";
+import { faTimes } from "@fortawesome/pro-duotone-svg-icons/faTimes";
+import { faTimesCircle } from "@fortawesome/pro-duotone-svg-icons/faTimesCircle";
 
 import colors from 'vuetify/es5/util/colors'
 
@@ -27,6 +57,19 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
     href:
       "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900",
   });
+
+  if (!head.style) head.style = [];
+  head.style.push({
+    cssText: `
+    .body {
+      background: white;
+    }
+    @media (prefers-color-scheme: dark) {
+      .body {
+        background: #121212;
+      }
+    }`
+  })
 
   Vue.use(VueCompositionAPI);
   Vue.use(Vuetify);
@@ -45,12 +88,14 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
 
 
   let dark = false;
-  try {
-  const isDark = localStorage.getItem("dark");
-     dark = isDark
-      ? isDark === "true"
-      : window?.matchMedia("(prefers-color-scheme: dark)").matches === true;
-  } catch (e) {}
+  if (isClient) {
+    try {
+      const isDark = localStorage.getItem("dark");
+      dark = isDark
+        ? isDark === "true"
+        : window?.matchMedia("(prefers-color-scheme: dark)").matches === true;
+    } catch (e) { }
+  }
 
   appOptions.vuetify = new Vuetify({
     theme: {
