@@ -143,7 +143,7 @@ module.exports = function(api) {
         counts[tag] = (counts[tag] || 0) + 1;
       }
     }
-    console.log(counts);
+    // console.log(counts);
     for (const [key, value] of Object.entries(counts)) {
       tags.getNodeById(key).count = value;
     }
@@ -167,7 +167,7 @@ module.exports = function(api) {
     if (data.path && data.slug) {
       data.path = data.path.replace(/\/slug/g, "/" + data.slug);
     }
-    console.log(data.internal.typeName);
+    // console.log(data.internal.typeName);
   }
   api.onCreateNode(onPreCreateNode);
   api.onCreateNode(onTypeCreated("BlogPost", onBlogPost));
@@ -177,6 +177,7 @@ module.exports = function(api) {
 
   api._app.pages.hooks.createPage.tap("Gridsome", page => {
     if (page.path) {
+      // console.log(page);
       page.context = page.context || {};
       ensureImage(page.context, page.path);
     }

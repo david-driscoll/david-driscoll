@@ -1,5 +1,5 @@
 <template>
-  <Layout :image="$context.image">
+  <Layout :image="$context.image" :title="'About'">
     <h1>About us</h1>
     <p>
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error doloremque
@@ -7,6 +7,9 @@
       odit fugit assumenda rem dolores inventore iste reprehenderit maxime!
       Iusto.
     </p>
+    <template v-slot:description>
+      custom desc asdf
+    </template>
   </Layout>
 </template>
 

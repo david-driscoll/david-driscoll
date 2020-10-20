@@ -7,11 +7,13 @@
   >
     <v-container
       v-if="title || description"
-      style="height: 15vw"
+      style="min-height: 15vw"
       class="d-flex justify-center align-center flex-column white--text pa-0"
     >
-      <h1 v-html="title" v-if="title" />
-      <h3 class="text-body-1" v-html="description" v-if="description" />
+      <h1 v-html="title" v-if="title" :style="{ 'font-size': `${15/3}vw` }" />
+      <slot name="description">
+        <h3 class="headline" v-html="description" :style="{ 'font-size': `${15/10}vw`, 'line-height': 1 }" v-if="description" />
+      </slot>
     </v-container>
 
     <v-container fluid class="pa-0">

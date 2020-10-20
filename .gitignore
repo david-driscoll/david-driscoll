@@ -8,3 +8,4 @@ dist
 .env.*
 /static/generated/*.svg
 /static/generated/*.png
+/static/generated/*.scss

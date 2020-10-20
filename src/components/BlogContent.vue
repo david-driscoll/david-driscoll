@@ -8,7 +8,7 @@
   >
     <v-container
       v-if="post.title || post.description"
-      style="height: 15vw"
+      style="min-height: 15vw"
       class="d-flex justify-center align-center flex-column white--text"
     >
       <g-link :to="post.path" class="white--text" v-if="linkTo">

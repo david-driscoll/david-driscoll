@@ -2,8 +2,8 @@
   <v-container class="bg-image" fluid :style="backgroundStyle">
     <slot />
 
-    <div class="license pa-1 rounded-bl-lg">
-      <license v-if="license" :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }" :license="license" />
+    <div  v-if="license" class="license pa-1 rounded-bl-lg">
+      <license :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }" :license="license" />
     </div>
   </v-container>
 </template>

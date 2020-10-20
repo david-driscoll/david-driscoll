@@ -1,3 +1,5 @@
+require("ts-node/register");
+
 // This is where project configuration and plugin options are located.
 // Learn more: https://gridsome.org/docs/config
 
@@ -234,8 +236,8 @@ module.exports = {
   transformers: {
     remark: {
       plugins: [
+        [require('./code-highlighting'), { skipInline: true }],
         ["gridsome-remark-figure-caption", {}],
-        ["gridsome-plugin-remark-shiki", { theme: "nord", skipInline: true }],
       ],
       // https://webstone.info/documentation/gridsome-plugin-remark-embed/
       /*
