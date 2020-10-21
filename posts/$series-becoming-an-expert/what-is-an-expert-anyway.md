@@ -15,6 +15,6 @@ This is beginning of a series of blog posts, to help others understand what make
 ```csharp
 class HelloWorld {
   public string Property { get; set; }
-
+  public async Task Method(string value) => Task.Completed;
 }
 ```
