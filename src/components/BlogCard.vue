@@ -14,24 +14,12 @@
       }"
     />
     <v-card-title v-html="post.title" />
-    <v-card-subtitle
-      v-if="post.description"
-      v-html="post.description"
-    ></v-card-subtitle>
-    <v-card-subtitle>
-      <span v-if="post.series && post.series.title">
-        Series: {{ post.series.title }}
-      </span>
+    <v-card-subtitle v-if="post.description" v-html="post.description"></v-card-subtitle>
+    <v-card-subtitle v-if="post.series && post.series.title">
+      Series: {{ post.series.title }}
       &nbsp;
     </v-card-subtitle>
-    <v-card-text>
-      <v-container
-        v-if="post.title || post.description"
-        class="d-flex justify-center align-center flex-column white--text"
-      >
-      </v-container>
-    </v-card-text>
-    <card-tags v-if="post.tags.length > 0" :tags="post.tags" class="primary" color="secondary" />
+    <card-tags v-if="post.tags && post.tags.length > 0" :tags="post.tags" class="primary" color="secondary" />
   </v-card>
 </template>
 
@@ -72,7 +60,6 @@ export default defineComponent({
         path: string;
         title: string;
         description: string;
-        content: string;
         series: {
           title: string;
         };

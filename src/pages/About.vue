@@ -1,5 +1,5 @@
 <template>
-  <Layout :image="$context.image" :title="'About'">
+  <Layout :image="image" :title="'About'">
     <h1>About us</h1>
     <p>
       Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error doloremque
@@ -18,6 +18,12 @@ import { defineComponent } from "@vue/composition-api";
 import Layout from "../layouts/Default.vue";
 export default defineComponent({
   components: { Layout },
+  computed: {
+    image() {
+      // if (this.$vuetify.theme.dark) return '/pages/about.png';
+       return this.$context.image.path
+    }
+  },
   setup() {
     return {};
   },

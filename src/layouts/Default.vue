@@ -1,42 +1,25 @@
 <template>
-  <bg-image
-    :image="imagePath"
-    :license="licenseValue"
-    :position="position"
-    :size="size"
-  >
-    <v-container
-      v-if="title || description"
-      style="min-height: 15vw"
-      class="d-flex justify-center align-center flex-column white--text pa-0"
-    >
-      <h1 v-html="title" v-if="title" :style="{ 'font-size': `${15/3}vw` }" />
+  <bg-image :image="imagePath" :license="licenseValue" :position="position" :size="size">
+    <v-container v-if="title || description" style="min-height: 15vw" class="d-flex justify-center align-center flex-column white--text pa-0">
+      <h1 v-html="title" v-if="title" :style="{ 'font-size': `${15 / 3}vw` }" />
       <slot name="description">
-        <h3 class="headline" v-html="description" :style="{ 'font-size': `${15/10}vw`, 'line-height': 1 }" v-if="description" />
+        <h3 class="headline" v-html="description" :style="{ 'font-size': `${15 / 10}vw`, 'line-height': 1 }" v-if="description" />
       </slot>
     </v-container>
 
     <v-container fluid class="pa-0">
       <v-row class="d-flex justify-center">
-        <v-col class="flex-shrink-0 flex-grow-0" v-if="hasLeft">
-          <slot name="left" />
-        </v-col>
+        <slot name="left" v-if="hasLeft" style="margin-top: -10em" />
 
-        <v-col class="flex-shrink-0 flex-grow-1">
-          <v-container
-            :style="{ 'margin-top': overlay ? '-2vw' : '' }"
-            :fluid="fluid"
-            class="pa-0"
-          >
-            <v-sheet min-height="80vh" rounded="lg">
+        <v-col class="flex-shrink-0 flex-grow-1 order-first order-md-1">
+          <v-container :style="{ 'margin-top': overlay ? '-2vw' : '' }" :fluid="fluid" class="pa-0">
+            <v-sheet min-height="80vh" rounded="lg" elevation="2">
               <slot />
             </v-sheet>
           </v-container>
         </v-col>
 
-        <v-col class="flex-shrink-0 flex-grow-0" v-if="hasRight">
-          <slot name="right" />
-        </v-col>
+        <slot name="right" v-if="hasRight" style="margin-top: -10em"  />
       </v-row>
     </v-container>
   </bg-image>
@@ -82,9 +65,7 @@ export default defineComponent({
   components: { BgImage },
   computed: {
     imagePath(): string | undefined {
-      return typeof this.image === "string"
-        ? this.image
-        : this.image && this.image.path;
+      return typeof this.image === "string" ? this.image : this.image && this.image.path;
     },
     licenseValue(): object | undefined {
       if (typeof this.image === "string") return undefined;

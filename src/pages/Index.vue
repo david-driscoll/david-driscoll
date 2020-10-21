@@ -7,6 +7,19 @@
     :description="$static.metadata.siteDescription"
     overlay
   >
+  <template v-slot:left>
+    <v-col cols="12" md="4" lg="3" xl="2" class="order-2 order-md-1" style="margin-bottom: 10em">
+    <v-card class="ma-4">
+      <v-card-title>Recent Posts</v-card-title>
+    </v-card>
+    <blog-card v-for="post in $page.recentPosts.edges" :key="post.node.id" :post="post.node"/>
+    </v-col>
+  </template>
+  <template v-slot:right>
+    <v-col cols="12" md="3" lg="2"  class="order-2 order-md-3" style="margin-top: -10em">
+      <tag-cloud :tags="$page.topTags.edges.map(z => z.node)" style="min-height: 20vw; max-height: 30vw; margin-bottom: 5em" />
+    </v-col>
+  </template>
     <!-- Learn how to use images here: https://gridsome.org/docs/images -->
     <g-image alt="Example image" src="~/favicon.png" width="135" />
 
@@ -37,60 +50,8 @@
       <v-sheet color="info" height="40" width="40"></v-sheet>
       <v-sheet color="success" height="40" width="40"></v-sheet>
       <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
 
-      <v-card
+      <!-- <v-card
         v-for="edge in $page.posts.edges"
         :key="edge.node.id"
         :post="edge.node"
@@ -98,7 +59,7 @@
       >
         {{ edge.node.title }}
         {{ edge.node.date }}
-      </v-card>
+      </v-card> -->
 
       <!-- <div v-for="edge in $page.series.edges" :key="edge.node.id" :post="edge.node">
         {{edge.node.title}}
@@ -119,8 +80,10 @@ query {
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
 import Layout from "../layouts/Default.vue";
+import BlogCard from "../components/BlogCard.vue";
+import TagCloud from "../components/TagCloud.vue";
 export default defineComponent({
-  components: { Layout },
+  components: { BlogCard, Layout, TagCloud },
   setup() {
     // return {
     //   image: getImage("App"),
@@ -146,29 +109,38 @@ export default defineComponent({
 </style>
 
 <page-query>
-query ($page: Int) {
-  posts: allBlogPost(perPage: 3, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
+query {
+  recentPosts: allBlogPost(
+    limit: 3
+    sort: { by: "date", order: DESC }
+    filter: { isFuture: { eq: false } }
+  ) {
     totalCount
-    pageInfo {
-      ...pageInfo
-    }
     edges {
       node {
-        title
-        date (format: "dddd, MMMM D YYYY")
+        id
         path
+        title
+        description
+        timeToRead
+        date
+        image {
+          path
+        }
       }
     }
   }
-}
-
-fragment pageInfo on PageInfo {
-  totalItems
-  hasPreviousPage
-  hasNextPage
-  isFirst
-  isLast
-  totalPages
-  currentPage
+  #topTags: allTag(limit: 10, sort: { by: "count", order: DESC }) {
+  topTags: allTag(sort: { by: "count", order: DESC }) {
+    edges {
+      node {
+        id
+        title
+        path
+        slug
+        count
+      }
+    }
+  }
 }
 </page-query>

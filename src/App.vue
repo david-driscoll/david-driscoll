@@ -135,8 +135,8 @@ export default defineComponent({
       tabs: [
         { to: "/about/", title: "About", icon: faUserTag },
         { to: "/blog/", title: "Blog", icon: faBlog },
-        { to: "/projects/", title: "Projects", icon: faHatWitch },
-        { to: "/speaking/", title: "Speaking", icon: faPodium },
+        // { to: "/projects/", title: "Projects", icon: faHatWitch },
+        // { to: "/speaking/", title: "Speaking", icon: faPodium },
         { to: "/tags/", title: "Tags", icon: faTags },
         { to: "/series/", title: "Series", icon: faLayerGroup },
       ],

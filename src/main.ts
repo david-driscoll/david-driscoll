@@ -100,6 +100,9 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
 
   appOptions.vuetify = new Vuetify({
     theme: {
+      options: {
+        customProperties: true
+      },
       dark,
       themes: {
         light: {
