@@ -78,6 +78,11 @@ export default function (Vue: Parameters<Client>[0], { router, head, isClient, a
         return createMeta.apply(this, args);
       },
     },
+    computed: {
+      $$pageTitle() {
+        return (this?.$page as any)?.post?.title ?? this.title ?? (this.$metaInfo as any)?.title;
+      }
+    }
   });
 
   console.log(appOptions);

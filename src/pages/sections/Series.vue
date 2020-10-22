@@ -19,9 +19,7 @@ export default defineComponent({
     return {};
   },
   metaInfo() {
-    return {
-      title: "Series",
-    };
+    return this.$seo({ title: "Series" }, {});
   },
 });
 </script>

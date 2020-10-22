@@ -6,6 +6,7 @@ declare module "vue/types/vue" {
     $icons: Record<string, IconDefinition>;
     $static: Record<string, any>;
     $page: Record<string, any>;
+    $$pageTitle: string;
     $seo(options: Seo, inputMeta: MetaInfo): MetaInfo;
   }
 }

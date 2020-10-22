@@ -3,20 +3,14 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-card-title class="text-center"> <span>Posts for '{{ $page.tag.title }}'</span> </v-card-title>
+          <v-card-title class="text-center">
+            <span>Posts for '{{ $page.tag.title }}'</span>
+          </v-card-title>
         </v-card>
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        v-for="(post, i) in posts"
-        :key="post.id"
-        class="pa-0"
-        cols="12"
-        sm="12"
-        md="6"
-        xl="4"
-      >
+      <v-col v-for="(post, i) in posts" :key="post.id" class="pa-0" cols="12" sm="12" md="6" xl="4">
         <blog-card :post="post" :date-position="getDatePosition(i)" />
         <!-- <blog-card
           v-for="post in right"
@@ -68,9 +62,7 @@ import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   components: { BlogCard },
   metaInfo() {
-    return {
-      title: `Tag - ${this.$page.tag.title}`
-    }
+    return this.$seo({ title: `Tag - ${this.$page.tag.title}` }, {});
   },
   setup() {
     return {};
@@ -78,15 +70,15 @@ export default defineComponent({
   methods: {
     getDatePosition(index: number) {
       if (this.$vuetify.breakpoint.smAndDown) {
-        return 'right';
+        return "right";
       }
       if (this.$vuetify.breakpoint.xl) {
-        return (Math.ceil((index + 1) / 3)) % 2 === 0 ? 'right' : 'left';
+        return Math.ceil((index + 1) / 3) % 2 === 0 ? "right" : "left";
       }
       if (this.$vuetify.breakpoint.mdAndUp) {
-        return index % 2 === 0 ? 'right' : 'left';
+        return index % 2 === 0 ? "right" : "left";
       }
-    }
+    },
   },
   computed: {
     posts() {

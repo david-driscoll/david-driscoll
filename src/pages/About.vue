@@ -28,9 +28,9 @@ export default defineComponent({
     return {};
   },
   metaInfo() {
-    return {
+    return this.$seo({
       title: "About",
-    };
+    }, {});
   },
 });
 </script>

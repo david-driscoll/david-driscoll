@@ -3,12 +3,7 @@
     <v-row>
       <v-col class="pa-0">
         <v-card class="mx-auto">
-          <bg-image
-            :image="series.image.path"
-            :license="series.image.license"
-            :style="{ 'min-height': '280px' }"
-            class="align-end d-flex secondary--text pa-0"
-          >
+          <bg-image :image="series.image.path" :license="series.image.license" :style="{ 'min-height': '280px' }" class="align-end d-flex secondary--text pa-0">
             <g-link :to="series.path">
               <v-card-title
                 :class="{
@@ -127,9 +122,7 @@ export default defineComponent({
     return {};
   },
   metaInfo() {
-    return {
-      title: `Series - ${this.$page.series.title}`
-    }
+    return this.$seo({ title: `Series - ${this.$page.series.title}` }, {});
   },
   computed: {
     series() {

@@ -2,12 +2,7 @@
   <v-container>
     <v-row>
       <v-col class="flex-shrink-0 flex-grow-1">
-        <series-content
-          v-for="series in $page.series.edges"
-          :key="series.node.id"
-          :series="series.node"
-          :posts="series.node.posts.edges.map((z) => z.node)"
-        />
+        <series-content v-for="series in $page.series.edges" :key="series.node.id" :series="series.node" :posts="series.node.posts.edges.map((z) => z.node)" />
       </v-col>
     </v-row>
     <v-row class="d-flex justify-space-between">
@@ -47,27 +42,18 @@ export default defineComponent({
       const page = this.$route?.params?.page;
       const next = this.$page.series.pageInfo.currentPage + 1;
       const fullPath = this.$route.fullPath;
-      return page
-        ? fullPath.substring(0, fullPath.lastIndexOf(page.toString())) +
-            next.toString() +
-            "/"
-        : fullPath + "2/";
+      return page ? fullPath.substring(0, fullPath.lastIndexOf(page.toString())) + next.toString() + "/" : fullPath + "2/";
     },
     prev() {
       if (!this.$page.series.pageInfo.hasPreviousPage) return undefined;
       const page = this.$route?.params?.page;
       const prev = this.$page.series.pageInfo.currentPage - 1;
       const fullPath = this.$route.fullPath;
-      return (
-        fullPath.substring(0, fullPath.lastIndexOf(page)) +
-        (prev === 1 ? "" : prev.toString() + "/")
-      );
+      return fullPath.substring(0, fullPath.lastIndexOf(page)) + (prev === 1 ? "" : prev.toString() + "/");
     },
   },
   metaInfo() {
-    return {
-      title: "Series",
-    };
+    return this.$seo({ title: "Series" }, {});
   },
 });
 </script>

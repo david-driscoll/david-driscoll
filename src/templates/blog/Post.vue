@@ -47,9 +47,7 @@ export default defineComponent({
   components: { BlogContent, BgImage, SeriesCard, TagCloud },
   mounted() {},
   metaInfo() {
-    return {
-      title: this.$page.post.title
-    };
+    return this.$seo({}, { title: this.$page.post.title });
   },
 
   computed: {

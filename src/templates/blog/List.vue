@@ -1,14 +1,6 @@
 <template>
   <v-container fluid class="pa-0">
-    <blog-content
-      :post="post.node"
-      min-height="70vh"
-      class="pa-2"
-      contain
-      position="top"
-      v-for="post in $page.posts.edges"
-      :key="post.node.id"
-    />
+    <blog-content :post="post.node" min-height="70vh" class="pa-2" contain position="top" v-for="post in $page.posts.edges" :key="post.node.id" />
     <v-container>
       <v-row class="d-flex justify-space-between">
         <v-col class="flex-grow-0 flex-shrink-0">
@@ -41,31 +33,33 @@ export default defineComponent({
   mounted() {},
   icons: { faCalendar },
   metaInfo() {
-    return {
-      title: 'Posts'
-    }
+    return this.$seo(
+      {},
+      {
+        title: "Posts",
+        titleTemplate: (value: string) => {
+          if (this.$page.posts.pageInfo.currentPage > 1) {
+            return `${value} - Page ${this.$page.posts.pageInfo.currentPage} - ${this.$static.metadata.siteName}`;
+          }
+          return `${value} - ${this.$static.metadata.siteName}`;
+        },
+      }
+    );
   },
   computed: {
-    next() {
+    prev() {
       if (!this.$page.posts.pageInfo.hasNextPage) return undefined;
       const page = this.$route?.params?.page;
       const next = this.$page.posts.pageInfo.currentPage + 1;
       const fullPath = this.$route.fullPath;
-      return page
-        ? fullPath.substring(0, fullPath.lastIndexOf(page.toString())) +
-            next.toString() +
-            "/"
-        : fullPath + "2/";
+      return page ? fullPath.substring(0, fullPath.lastIndexOf(page.toString())) + next.toString() + "/" : fullPath + "2/";
     },
-    prev() {
+    next() {
       if (!this.$page.posts.pageInfo.hasPreviousPage) return undefined;
       const page = this.$route?.params?.page;
       const prev = this.$page.posts.pageInfo.currentPage - 1;
       const fullPath = this.$route.fullPath;
-      return (
-        fullPath.substring(0, fullPath.lastIndexOf(page)) +
-        (prev === 1 ? "" : prev.toString() + "/")
-      );
+      return fullPath.substring(0, fullPath.lastIndexOf(page)) + (prev === 1 ? "" : prev.toString() + "/");
     },
   },
   setup() {
@@ -82,6 +76,14 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 </style>
+
+<static-query>
+query {
+  metadata{
+    siteName
+  }
+}
+</static-query>
 
 <page-query>
 query ($page: Int) {

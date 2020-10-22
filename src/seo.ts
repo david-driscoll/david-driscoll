@@ -29,39 +29,44 @@ const template = {
   },
 };
 
-
-export const createTitle = (options: any) => {
-  return options.titleTemplate?.replace(/%s/g, options.title);
-};
-
-export function createMeta(this: Vue, options: Seo = {}, inputMeta: MetaInfo): MetaInfo {
+export function createMeta(this: Vue, options: Seo, inputMeta: MetaInfo): MetaInfo {
   const output: NonNullable<MetaInfo["meta"]> = inputMeta.meta ?? (inputMeta.meta = []);
 
   const og: NonNullable<MetaInfo["meta"]> = [];
   const twitter: NonNullable<MetaInfo["meta"]> = [];
   options.article = options.article ?? {};
 
-  if (this.$static) {
+  if (inputMeta.title) {
+    options.title = inputMeta.title;
+  } else if (options.title) {
+    inputMeta.title = options.title;
+  }
 
+  if (this.$static) {
     inputMeta.link = inputMeta.link ?? [];
 
     options.name = this.$static.metadata?.siteName ?? false;
     options.description = this.$static.metadata?.siteDescription ?? false;
     if (this.$static.metadata?.siteUrl) {
-      inputMeta.link.push({ rel: "canonical", href: `${this.$static.metadata?.siteUrl}${this.$route.fullPath}` });
-    }
-    if (inputMeta.title) {
-      options.title = createTitle(inputMeta);
+      inputMeta.link.push(
+        { rel: "canonical", href: `${this.$static.metadata?.siteUrl}${this.$route.fullPath}/` },
+        { rel: "alternate", type: 'application/rss+xml', href: `${this.$static.metadata?.siteUrl}/feed.xml` },
+        { rel: "alternate", type: 'application/atom+xml', href: `${this.$static.metadata?.siteUrl}/feed.atom` },
+      );
+
+      og.push({ key: "url", property: "url", content: `${this.$static.metadata?.siteUrl}${this.$route.fullPath}/` });
     }
     if (this.$static.metadata?.author) {
-      options.article.author = [{
-        firstName: this.$static.metadata.author.firstName,
-        lastName: this.$static.metadata.author.lastName,
-        username: this.$static.metadata.author.username
-      }];
+      options.article.author = [
+        {
+          firstName: this.$static.metadata.author.firstName,
+          lastName: this.$static.metadata.author.lastName,
+          username: this.$static.metadata.author.username,
+        },
+      ];
     }
     if (this.$static.metadata?.author?.twitter) {
-      twitter.push({ key: 'site', property: 'site', content: this.$static.metadata?.author?.twitter })
+      twitter.push({ key: "site", property: "site", content: this.$static.metadata?.author?.twitter });
     }
   }
   if (this.$page) {
@@ -72,77 +77,88 @@ export function createMeta(this: Vue, options: Seo = {}, inputMeta: MetaInfo): M
     if (this.$page.image) {
       options.image = options.image ?? {};
       options.image.url = this.$page.image?.path ?? this.$page.image;
-      if (options.image.url?.includes('generated/')) options.image.url = undefined;
+      if (options.image.url?.includes("generated/")) options.image.url = undefined;
     }
   }
 
-  const title = createTitle(inputMeta);
-
-  output.push({ key: 'language', property: 'language', content: 'English' });
-  output.push({ key: 'lang', property: 'lang', content: 'en' });
-  if (title) {
-    if (title.length > 70) title.substring(0, 70);
-    output.push({ key: 'title', name: 'title', content: title });
-    og.push({ key: 'title', property: 'title', content: title });
-    twitter.push({ key: 'title', property: 'title', content: title });
+  output.push({ key: "language", property: "language", content: "English" });
+  output.push({ key: "lang", property: "lang", content: "en" });
+  if (options.title) {
+    output.push({
+      key: "title",
+      name: "title",
+      template: inputMeta.titleTemplate! as any,
+      content: options.title
+    });
+    og.push({
+      key: "title",
+      property: "title",
+      template: inputMeta.titleTemplate! as any,
+      content: options.title
+    });
+    twitter.push({
+      key: "title",
+      property: "title",
+      template: inputMeta.titleTemplate! as any,
+      content: options.title
+    });
   }
   if (options.description) {
     if (options.description.length > 200) options.description.substring(0, 200);
-    output.push({ key: 'description', name: 'description', content: options.description });
-    og.push({ key: 'description', property: 'description', content: options.description });
-    twitter.push({ key: 'description', property: 'description', content: options.description });
+    output.push({ key: "description", name: "description", content: options.description });
+    og.push({ key: "description", property: "description", content: options.description });
+    twitter.push({ key: "description", property: "description", content: options.description });
   }
 
   if (options.name) {
-    output.push({ key: 'title', name: 'title', content: options.name });
-    og.push({ key: 'site_name', property: 'site_name', content: options.name });
+    og.push({ key: "site_name", property: "site_name", content: options.name });
   }
 
   if (options.copyright) {
-    output.push({ key: 'copyright', name: 'copyright', content: options.copyright });
+    output.push({ key: "copyright", name: "copyright", content: options.copyright });
   }
 
   if (options.image) {
     if (options.image.url) {
-      og.push({ key: 'image', property: 'image', content: options.image.url });
-      og.push({ key: 'image:url', property: 'image:url', content: options.image.url });
-      twitter.push({ key: 'image', property: 'image', content: options.image.url });
+      og.push({ key: "image", property: "image", content: options.image.url });
+      og.push({ key: "image:url", property: "image:url", content: options.image.url });
+      twitter.push({ key: "image", property: "image", content: options.image.url });
     }
     if (options.image.alt) {
-      og.push({ key: 'image:alt', property: 'image:alt', content: options.image.alt });
-      twitter.push({ key: 'image:alt', property: 'image:alt', content: options.image.alt });
+      og.push({ key: "image:alt", property: "image:alt", content: options.image.alt });
+      twitter.push({ key: "image:alt", property: "image:alt", content: options.image.alt });
     }
     if (options.image.height) {
-      og.push({ key: 'image:height', property: 'image:height', content: options.image.height.toString() });
+      og.push({ key: "image:height", property: "image:height", content: options.image.height.toString() });
     }
     if (options.image.width) {
-      og.push({ key: 'image:width', property: 'image:width', content: options.image.width.toString() });
+      og.push({ key: "image:width", property: "image:width", content: options.image.width.toString() });
     }
     if (options.image.type) {
-      og.push({ key: 'image:type', property: 'image:type', content: options.image.type });
+      og.push({ key: "image:type", property: "image:type", content: options.image.type });
     }
   }
 
   if (options.article) {
-    og.push({ key: 'type', property: 'type', content: 'article' });
+    og.push({ key: "type", property: "type", content: "article" });
     if (options.article.publishedTime) {
-      const time = typeof options.article.publishedTime === 'string' ? options.article.publishedTime : options.article.publishedTime.toISOString();
-      output.push({ key: 'article:published_time', property: 'article:published_time', content: time });
+      const time = typeof options.article.publishedTime === "string" ? options.article.publishedTime : options.article.publishedTime.toISOString();
+      output.push({ key: "article:published_time", property: "article:published_time", content: time });
     }
     if (options.article.expirationTime) {
-      const time = typeof options.article.expirationTime === 'string' ? options.article.expirationTime : options.article.expirationTime.toISOString();
-      output.push({ key: 'article:expiration_time', property: 'article:expiration_time', content: time });
+      const time = typeof options.article.expirationTime === "string" ? options.article.expirationTime : options.article.expirationTime.toISOString();
+      output.push({ key: "article:expiration_time", property: "article:expiration_time", content: time });
     }
     if (options.article.modifiedTime) {
-      const time = typeof options.article.modifiedTime === 'string' ? options.article.modifiedTime : options.article.modifiedTime.toISOString();
-      output.push({ key: 'article:modified_time', property: 'article:modified_time ', content: time });
+      const time = typeof options.article.modifiedTime === "string" ? options.article.modifiedTime : options.article.modifiedTime.toISOString();
+      output.push({ key: "article:modified_time", property: "article:modified_time ", content: time });
     }
     if (options.article.section) {
-      output.push({ key: 'article:section', property: 'article:section ', content: options.article.section });
+      output.push({ key: "article:section", property: "article:section ", content: options.article.section });
     }
     if (options.article.tags) {
       for (const tag of options.article.tags) {
-        output.push({ key: 'article:tag', property: 'article:tag ', content: tag });
+        output.push({ key: "article:tag", property: "article:tag ", content: tag });
       }
     }
 
@@ -150,24 +166,36 @@ export function createMeta(this: Vue, options: Seo = {}, inputMeta: MetaInfo): M
       for (let i = 0; i < options.article.author.length; i++) {
         const author = options.article.author[i];
         if (author.username) {
-          output.push({ key: 'article:author:' + i, property: 'article:author', content: author.username });
-          output.push({ key: 'article:author:username:' + i, property: 'article:author:username', content: author.username });
+          output.push({ key: "article:author:" + i, property: "article:author", content: author.username });
+          output.push({ key: "article:author:username:" + i, property: "article:author:username", content: author.username });
         }
         if (author.firstName) {
-          output.push({ key: 'article:author:first_name:' + i, property: 'article:author:first_name', content: author.firstName });
+          output.push({ key: "article:author:first_name:" + i, property: "article:author:first_name", content: author.firstName });
         }
         if (author.lastName) {
-          output.push({ key: 'article:author:last_name:' + i, property: 'article:author:last_name', content: author.lastName });
+          output.push({ key: "article:author:last_name:" + i, property: "article:author:last_name", content: author.lastName });
         }
       }
     }
   }
 
-  if (!og.some(z => z.property === 'type')) {
-    og.push({ key: 'type', property: 'type', content: 'website' });
+  if (!og.some((z) => z.property === "type")) {
+    og.push({ key: "type", property: "type", content: "website" });
   }
-  output.push(...og.map(z => ({ ...z, key: (z.key ? `og:${z.key}` : undefined as any), property: (z.property ? `og:${z.property}`: undefined as any) })))
-  output.push(...twitter.map(z => ({ ...z, key: (z.key ? `twitter:${z.key}` : undefined as any), property: (z.property ? `twitter:${z.property}`: undefined as any) })))
+  output.push(
+    ...og.map((z) => {
+      z.key = `og:${z.key}`;
+      z.property = `og:${z.property}`;
+      return z;
+    })
+  );
+  output.push(
+    ...twitter.map((z) => {
+      z.key = `twitter:${z.key}`;
+      z.property = `twitter:${z.property}`;
+      return z;
+    })
+  );
   return inputMeta;
 }
 
@@ -205,9 +233,9 @@ export interface Seo {
   image?: Image;
   profile?: Profile;
   twitter?: {
-    card?: string,
-    type?: string,
-    site: { content: true },
-    creator: { content: true },
-  }
+    card?: string;
+    type?: string;
+    site: { content: true };
+    creator: { content: true };
+  };
 }

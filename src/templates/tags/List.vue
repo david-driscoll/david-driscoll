@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-6">
-    <tag-cloud :tags="$page.tags.edges.map(z => z.node)" />
+    <tag-cloud :tags="$page.tags.edges.map((z) => z.node)" />
   </v-container>
 </template>
 
@@ -12,9 +12,7 @@ export default defineComponent({
   mounted() {},
   computed: {},
   metaInfo() {
-    return {
-      title: "Tag Cloud"
-    }
+    return this.$seo({ title: "Tag Cloud" }, {});
   },
   setup() {
     return {};
