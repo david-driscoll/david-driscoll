@@ -67,6 +67,11 @@ import BlogCard from "../components/BlogCard.vue";
 import { defineComponent } from "@vue/composition-api";
 export default defineComponent({
   components: { BlogCard },
+  metaInfo() {
+    return {
+      title: `Tag - ${this.$page.tag.title}`
+    }
+  },
   setup() {
     return {};
   },

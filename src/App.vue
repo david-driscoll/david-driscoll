@@ -9,7 +9,7 @@
       </v-progress-circular>
     </v-flex>
     <v-app-bar app clipped-left dense hide-on-scroll>
-      <v-progress-linear absolute top :dark="dark" color="accent" :active="loading" indeterminate ></v-progress-linear>
+      <v-progress-linear absolute top :dark="dark" color="accent" :active="loading" indeterminate></v-progress-linear>
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
         <v-tab to="/" exact :style="tabStyle" class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize">
           <span>David</span>
@@ -28,19 +28,37 @@
         </v-tab>
       </v-tabs>
     </v-app-bar>
-    <v-footer class="body-2">
-      <v-container>
+    <v-footer class="body-2 pa-0">
+      <v-container fluid class="pa-0">
         <v-row>
-          <v-col cols="12" class="d-flex justify-space-around">
-            Copyright &copy; David Driscoll 2019 -
-            {{ this.$static.metadata.build.year }}
+          <v-col cols="12" class="d-flex justify-space-around align-center">
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" href="/feed.xml" target="_blank" :dark="dark" small elevation="0" class="ma-2">
+                  <fa-icon :icon="$icons.faRss" flip="horizontal" /> <span class="px-2">RSS</span>
+                </v-btn>
+              </template>
+              <span>RSS Feed</span>
+            </v-tooltip>
+            <span>Copyright &copy; David Driscoll 2019 - {{ this.$static.metadata.build.year }}</span>
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" href="/feed.atom" target="_blank" :dark="dark" small elevation="0" class="ma-2">
+                  <span class="px-2">Atom</span> <fa-icon :icon="$icons.faRss" />
+                </v-btn>
+              </template>
+              <span>Atom Feed</span>
+            </v-tooltip>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" class="d-flex justify-space-around">
+          <g-link href="https://mvp.microsoft.com/en-us/PublicProfile/5001656" target="_blank">
+            <g-image :src="$vuetify.theme.dark ? '/mvp-long.png' : '/mvp-long-white.png'" style="height: 80px; position: absolute; left: 0; bottom: 0" />
+          </g-link>
+          <v-col cols="12" class="d-flex justify-end justify-sm-center">
             <v-tooltip top v-for="s in social" :key="s.url">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" v-on="on" fab :href="s.url" target="_blank" :dark="dark" small :color="(s.blackWhite && ($vuetify.theme.dark ? 'white' : 'black')) || s.buttonColor">
+                <v-btn v-bind="attrs" v-on="on" fab :href="s.url" target="_blank" :dark="dark" small :color="(s.blackWhite && ($vuetify.theme.dark ? 'white' : 'black')) || s.buttonColor" class="ma-2">
                   <fa-icon
                     :icon="s.icon"
                     :class="{
@@ -61,10 +79,19 @@
 
 <static-query>
 query {
+  # used by seo tool as well
   metadata {
     siteName
     siteDescription
+    siteUrl
+    author {
+      username
+      firstName
+      lastName
+      twitter
+    }
     build {
+      today
       year
     }
   }
@@ -97,6 +124,7 @@ import { faInfoCircle } from "@fortawesome/pro-duotone-svg-icons/faInfoCircle";
 import { faQuestionCircle } from "@fortawesome/pro-duotone-svg-icons/faQuestionCircle";
 import { faBlog } from "@fortawesome/pro-duotone-svg-icons/faBlog";
 import { faLayerGroup } from "@fortawesome/pro-duotone-svg-icons/faLayerGroup";
+import { faRss } from "@fortawesome/pro-duotone-svg-icons/faRss";
 
 export default defineComponent({
   mounted() {
@@ -223,6 +251,7 @@ export default defineComponent({
     faTwitter,
     faTwitch,
     faQuestionCircle,
+    faRss,
   },
   watch: {
     dark: {
@@ -233,16 +262,16 @@ export default defineComponent({
     },
   },
   metaInfo() {
-    return {
-      title: this.$static.metadata.siteName,
-      meta: [
-        {
-          key: "description",
-          name: "description",
-          content: this.$static.metadata.siteDescription,
+    return this.$seo(
+      {
+        openGraph: {
+          name: this.$static.metadata.siteName,
         },
-      ],
-    };
+      },
+      {
+        title: this.$static.metadata.siteName,
+      }
+    );
   },
 });
 </script>

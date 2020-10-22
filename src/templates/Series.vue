@@ -126,6 +126,11 @@ export default defineComponent({
   setup() {
     return {};
   },
+  metaInfo() {
+    return {
+      title: `Series - ${this.$page.series.title}`
+    }
+  },
   computed: {
     series() {
       return this.$page.series;

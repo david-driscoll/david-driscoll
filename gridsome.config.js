@@ -20,6 +20,12 @@ module.exports = {
   siteUrl: "https://" + siteHostname,
   siteDescription,
   metadata: {
+    author: {
+      username: 'David Driscoll',
+      firstName: 'David',
+      lastName: 'Driscoll',
+      twitter: '@david_dotnet'
+    },
     build: {
       today: today.toJSDate(),
       year: today.year,
@@ -227,7 +233,7 @@ module.exports = {
           },
         ],
       },
-    },
+    }
   ],
   templates: {
     // BlogPost: "/blog/:year/:month/:day/:title",

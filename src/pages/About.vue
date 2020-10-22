@@ -29,7 +29,7 @@ export default defineComponent({
   },
   metaInfo() {
     return {
-      title: "About us",
+      title: "About",
     };
   },
 });

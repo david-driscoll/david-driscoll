@@ -46,6 +46,12 @@ import SeriesCard from "../../components/SeriesCard.vue";
 export default defineComponent({
   components: { BlogContent, BgImage, SeriesCard, TagCloud },
   mounted() {},
+  metaInfo() {
+    return {
+      title: this.$page.post.title
+    };
+  },
+
   computed: {
     post(): any {
       return this.$page.post;

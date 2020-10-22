@@ -9,9 +9,6 @@
   >
   <template v-slot:left>
     <v-col cols="12" md="4" lg="3" xl="2" class="order-2 order-md-1" style="margin-bottom: 10em">
-    <v-card class="ma-4">
-      <v-card-title>Recent Posts</v-card-title>
-    </v-card>
     <blog-card v-for="post in $page.recentPosts.edges" :key="post.node.id" :post="post.node"/>
     </v-col>
   </template>

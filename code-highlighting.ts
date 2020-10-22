@@ -125,7 +125,7 @@ module.exports = (options: Partial<{ theme: string; skipInline: boolean }>) => {
 
 function highlight({ value, lang }: any, cls: string, highlighter: Highlighter) {
   const index = BUNDLED_LANGUAGES.findIndex((x) => x.id === lang);
-  console.log("lang", lang, "index", index, highlighter.codeToHtml);
+  // console.log("lang", lang, "index", index, highlighter.codeToHtml);
 
   if (index >= 0) {
     let highlightedCode = highlighter.codeToHtml!(value, lang);
@@ -135,7 +135,7 @@ function highlight({ value, lang }: any, cls: string, highlighter: Highlighter) 
     }
     const regex = new RegExp(`\<span style="(.*?)#000000(.*?)"\>`, "gi");
     highlightedCode = highlightedCode.replace(regex, `<span style="$1var(--shiki-foreground)$2">`);
-    console.log(highlightedCode);
+    // console.log(highlightedCode);
     return highlightedCode;
   }
 
@@ -171,7 +171,7 @@ function convertTheme(theme: IShikiTheme): IShikiTheme {
   // console.log(theme);
   // console.log(theme.settings[0]);
 
-  console.log(theme);
+  // console.log(theme);
   return theme;
 }
 

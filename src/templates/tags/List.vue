@@ -11,6 +11,11 @@ export default defineComponent({
   components: { TagCloud },
   mounted() {},
   computed: {},
+  metaInfo() {
+    return {
+      title: "Tag Cloud"
+    }
+  },
   setup() {
     return {};
   },

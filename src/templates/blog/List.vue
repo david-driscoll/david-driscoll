@@ -40,6 +40,11 @@ export default defineComponent({
   components: { BlogContent },
   mounted() {},
   icons: { faCalendar },
+  metaInfo() {
+    return {
+      title: 'Posts'
+    }
+  },
   computed: {
     next() {
       if (!this.$page.posts.pageInfo.hasNextPage) return undefined;

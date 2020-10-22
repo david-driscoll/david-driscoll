@@ -1,15 +1,15 @@
 <template>
   <bg-image :image="imagePath" :license="licenseValue" :position="position" :size="size">
     <v-container v-if="title || description" style="min-height: 15vw" class="d-flex justify-center align-center flex-column white--text pa-0">
-      <h1 v-html="title" v-if="title" :style="{ 'font-size': `${15 / 3}vw` }" />
+      <h1 v-html="title" v-if="title" :style="{ 'font-size': titleFontSize }" />
       <slot name="description">
-        <h3 class="headline" v-html="description" :style="{ 'font-size': `${15 / 10}vw`, 'line-height': 1 }" v-if="description" />
+        <h3 class="headline" v-html="description" :style="{ 'font-size': headlineFontSize, 'line-height': 1 }" v-if="description" />
       </slot>
     </v-container>
 
     <v-container fluid class="pa-0">
       <v-row class="d-flex justify-center">
-        <slot name="left" v-if="hasLeft" style="margin-top: -10em" />
+        <slot name="left" v-if="hasLeft" />
 
         <v-col class="flex-shrink-0 flex-grow-1 order-first order-md-1">
           <v-container :style="{ 'margin-top': overlay ? '-2vw' : '' }" :fluid="fluid" class="pa-0">
@@ -19,7 +19,7 @@
           </v-container>
         </v-col>
 
-        <slot name="right" v-if="hasRight" style="margin-top: -10em"  />
+        <slot name="right" v-if="hasRight" />
       </v-row>
     </v-container>
   </bg-image>
@@ -64,6 +64,14 @@ export default defineComponent({
   },
   components: { BgImage },
   computed: {
+    titleFontSize() {
+      if (this.$vuetify.breakpoint.mdAndDown) return `${15 / 3}vw`;
+      return "4em";
+    },
+    headlineFontSize() {
+      if (this.$vuetify.breakpoint.mdAndDown) return `${15 / 8}vw !important`;
+      return "1.5em";
+    },
     imagePath(): string | undefined {
       return typeof this.image === "string" ? this.image : this.image && this.image.path;
     },
