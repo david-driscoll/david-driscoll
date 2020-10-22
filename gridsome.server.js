@@ -180,6 +180,9 @@ module.exports = function(api) {
       // console.log(page);
       page.context = page.context || {};
       ensureImage(page.context, page.path);
+      page.context.image.width = 3840;
+      page.context.image.height = 960;
+      // ensureImage(page.context, page.path);
     }
     return page;
   });

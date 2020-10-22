@@ -70,14 +70,22 @@ export function createMeta(this: Vue, options: Seo, inputMeta: MetaInfo): MetaIn
     }
   }
   if (this.$page) {
+    if (this.$page?.post?.description) {
+      options.description = this.$page.post.description;
+    }
     if (this.$page?.post?.date) {
       options.article.publishedTime = this.$page.post?.date;
       options.article.modifiedTime = this.$page.post?.date;
     }
-    if (this.$page.image) {
+    if (this.$page?.post?.image || this.$page?.image || this.$context?.image) {
       options.image = options.image ?? {};
-      options.image.url = this.$page.image?.path ?? this.$page.image;
-      if (options.image.url?.includes("generated/")) options.image.url = undefined;
+      options.image.url = this.$page?.post?.image?.path ?? this.$page?.image?.path ?? this.$page?.image ?? this.$context?.image.path;
+      options.image.height = this.$page?.post?.image?.height ?? this.$page?.image?.height ?? this.$context?.image.height;
+      options.image.width = this.$page?.post?.image?.width ?? this.$page?.image?.width ?? this.$context?.image.width;
+      if (options.image.url?.includes("generated/")) {
+        options.image.url = options.image.url.replace('.svg', '.png');
+      }
+      // if (options.image.url?.includes("generated/")) options.image.url = undefined;
     }
   }
 

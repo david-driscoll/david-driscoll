@@ -27,7 +27,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-for="(post, i) in posts" :key="post.id">
+    <v-row v-for="(post) in posts" :key="post.id">
       <v-col class="pa-0">
         <blog-content :post="post" min-height="60vh" />
         <!-- <blog-card
