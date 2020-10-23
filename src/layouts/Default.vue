@@ -65,12 +65,12 @@ export default defineComponent({
   components: { BgImage },
   computed: {
     titleFontSize() {
-      if (this.$vuetify.breakpoint.mdAndDown) return `${15 / 3}vw`;
-      return "4em";
+      // if (this.$vuetify.breakpoint.mdAndDown) return `${15 / 3}vw`;
+      return "3.5em";
     },
     headlineFontSize() {
-      if (this.$vuetify.breakpoint.mdAndDown) return `${15 / 8}vw !important`;
-      return "1.5em";
+      // if (this.$vuetify.breakpoint.mdAndDown) return `${15 / 8}vw !important`;
+      return "1.3em !important";
     },
     imagePath(): string | undefined {
       return typeof this.image === "string" ? this.image : this.image && this.image.path;

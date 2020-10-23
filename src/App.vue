@@ -8,7 +8,7 @@
         <span class="headline">Loading</span>
       </v-progress-circular>
     </v-flex>
-    <v-app-bar app clipped-left dense hide-on-scroll>
+    <v-app-bar app clipped-left dense hide-on-scroll scroll-threshold="120">
       <v-progress-linear absolute top :dark="dark" color="accent" :active="loading" indeterminate></v-progress-linear>
       <v-tabs right optional :grow="$vuetify.breakpoint.xs" show-arrows>
         <v-tab to="/" exact :style="tabStyle" class="text-md-h5 text-xs-h6 font-weight-medium text-capitalize">
@@ -30,32 +30,36 @@
     </v-app-bar>
     <v-footer class="body-2 pa-0">
       <v-container fluid class="pa-0">
-        <v-row>
-          <v-col cols="12" class="d-flex justify-space-around align-center">
-            <v-tooltip top>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" v-on="on" href="/feed.xml" target="_blank" :dark="dark" small elevation="0" class="ma-2">
-                  <fa-icon :icon="$icons.faRss" flip="horizontal" /> <span class="px-2">RSS</span>
-                </v-btn>
-              </template>
-              <span>RSS Feed</span>
-            </v-tooltip>
-            <span>Copyright &copy; David Driscoll 2019 - {{ this.$static.metadata.build.year }}</span>
-            <v-tooltip top>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" v-on="on" href="/feed.atom" target="_blank" :dark="dark" small elevation="0" class="ma-2">
-                  <span class="px-2">Atom</span> <fa-icon :icon="$icons.faRss" />
-                </v-btn>
-              </template>
-              <span>Atom Feed</span>
-            </v-tooltip>
-          </v-col>
+        <v-row class="d-flex align-center justify-space-between px-6 py-2">
+          <v-flex class="flex-grow-0 flex-shrink-0" :style="footerSideStyle">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" href="/feed.atom" target="_blank" :dark="dark" color="secondary" elevation="3" class="ma-2">
+                    <span class="px-2">Atom</span> <fa-icon :icon="$icons.faRss" secondary-color="white" primary-color="white" />
+                  </v-btn>
+                </template>
+                <span>Atom Feed</span>
+              </v-tooltip>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" href="/feed.xml" target="_blank" :dark="dark" color="accent" elevation="3" class="ma-2">
+                    <fa-icon :icon="$icons.faRss" flip="horizontal" secondary-color="white" primary-color="white" /> <span class="px-2">RSS</span>
+                  </v-btn>
+                </template>
+                <span>RSS Feed</span>
+              </v-tooltip>
+          </v-flex>
+          <v-flex class="order-first order-sm-0 text-center">
+            Copyright &copy; David Driscoll 2019 - {{ this.$static.metadata.build.year }}
+          </v-flex>
+          <v-flex class="flex-grow-0 flex-shrink-0 text-right"  :style="footerSideStyle">
+            <a href="https://www.netlify.com">
+              <img :src="$vuetify.theme.dark ? 'https://www.netlify.com/img/global/badges/netlify-color-accent.svg' : 'https://www.netlify.com/img/global/badges/netlify-dark.svg'" alt="Deploys by Netlify" />
+            </a>
+          </v-flex>
         </v-row>
         <v-row>
-          <g-link href="https://mvp.microsoft.com/en-us/PublicProfile/5001656" target="_blank">
-            <g-image :src="$vuetify.theme.dark ? '/mvp-long.png' : '/mvp-long-white.png'" style="height: 80px; position: absolute; left: 0; bottom: 0" />
-          </g-link>
-          <v-col cols="12" class="d-flex justify-end justify-sm-center">
+          <v-col cols="12" class="d-flex justify-end justify-center">
             <v-tooltip top v-for="s in social" :key="s.url">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn v-bind="attrs" v-on="on" fab :href="s.url" target="_blank" :dark="dark" small :color="(s.blackWhite && ($vuetify.theme.dark ? 'white' : 'black')) || s.buttonColor" class="ma-2">
@@ -69,6 +73,14 @@
                 </v-btn>
               </template>
               <span v-text="s.username ? `${s.title} (${s.username})` : s.title"></span>
+            </v-tooltip>
+            <v-tooltip top>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn v-bind="attrs" v-on="on" fab href="https://mvp.microsoft.com/en-us/PublicProfile/5001656" target="_blank" :dark="dark" small class="ma-2" style="overflow:hidden">
+                <img :src="$vuetify.theme.dark ? '/mvp-white.png' : '/mvp.png'" style="height:90%;width:90%;" />
+                </v-btn>
+              </template>
+              Microsoft MVP
             </v-tooltip>
           </v-col>
         </v-row>
@@ -231,6 +243,14 @@ export default defineComponent({
         "min-width": "120px",
       };
     },
+    footerSideStyle() {
+      if (this.$vuetify.breakpoint.smAndDown) {
+        return {width: '100vw', 'text-align': 'center !important'};
+      }
+      return {
+        width: '20em'
+      }
+    }
   },
   icons: {
     faHomeAlt,
