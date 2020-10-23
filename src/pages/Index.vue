@@ -1,12 +1,12 @@
 <template>
   <Layout :image="image" size="contain" position="top" :title="$static.metadata.siteName" :description="$static.metadata.siteDescription" overlay>
     <template v-slot:left>
-      <v-col cols="12" md="4" lg="3" xl="2" class="order-2 order-md-1" style="margin-bottom: 10em">
+      <v-col cols="12" lg="3" xl="2" class="order-2 order-lg-1" style="margin-bottom: 10em">
         <blog-card v-for="post in $page.recentPosts.edges" :key="post.node.id" :post="post.node" />
       </v-col>
     </template>
     <template v-slot:right>
-      <v-col cols="12" md="3" lg="2" class="order-2 order-md-3" style="margin-top: -10em">
+      <v-col cols="12" lg="2" class="order-2 order-lg-3" style="margin-top: -10em">
         <tag-cloud :tags="$page.topTags.edges.map((z) => z.node)" style="min-height: 20vw; max-height: 30vw; margin-bottom: 5em" />
       </v-col>
     </template>
