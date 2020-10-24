@@ -258,12 +258,6 @@ module.exports = {
   transformers: {
     remark: {
       plugins: [
-        [
-          "remark-external-links",
-          {
-            /*content: externalLinkIcon.children[0],             contentProperties: {}*/
-          },
-        ],
         ["remark-slug", {}],
         [
           "remark-autolink-headings",
@@ -271,6 +265,13 @@ module.exports = {
             // behavior: 'wrap', //prepend append wrap before after
             content: linkIcon,
             linkProperties: { ariaHidden: true, tabIndex: -1, className: "anchor" },
+          },
+        ],
+        [
+          require("remark-external-links"),
+          {
+            content: externalLinkIcon,
+            contentProperties: { ariaHidden: true, tabIndex: -1, className: "external-link" }
           },
         ],
         [require("./github-links"), { token: process.env.GITHUB_TOKEN || "" }],

@@ -296,13 +296,19 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-:root [class*="--active"] .v-icon {
+.external-link::before {
+    content: ' ';
+}
+:root [class*="--active"]
+{
+  .v-icon, .svg-inline--fa {
   --fa-primary-color: inherit !important;
   --fa-primary-opacity: inherit !important;
   --fa-secondary-color: inherit !important;
   --fa-secondary-opacity: inherit !important;
+  }
 }
-.v-icon {
+.v-icon, .svg-inline--fa {
   --fa-primary-opacity: 1;
   --fa-secondary-opacity: 1;
   .theme--light :not([class*="--active"]) & {

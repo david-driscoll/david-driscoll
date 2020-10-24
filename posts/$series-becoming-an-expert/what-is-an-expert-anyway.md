@@ -13,6 +13,8 @@ This is beginning of a series of blog posts, to help others understand what make
 ... To be continued ...
 
 
+[here](https://github.com/david-driscoll)
+
 
 ```csharp
 class HelloWorld {
@@ -21,7 +23,6 @@ class HelloWorld {
 }
 ```
 
-[here](https://github.com)
 
 ![](https://github.com/jomaxx/remark-embedded-code-snippets/blob/78d8ec567422a9776beb2d48dd826189aed58267/prettier.config.js#L1)
 
