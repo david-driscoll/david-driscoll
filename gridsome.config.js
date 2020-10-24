@@ -10,7 +10,25 @@ const { DateTime, FixedOffsetZone } = require("luxon");
 
 const siteName = "David Driscoll";
 const siteHostname = "www.daviddriscoll.me";
-const siteDescription = "Ramblings and Tribulations of a Software Developer";
+const siteDescription = "Ramblings of a Software Developer";
+
+const { linkIcon, externalLinkIcon } = (() => {
+  const faLinkIcon = require("@fortawesome/pro-duotone-svg-icons/faLink");
+  const faExternalLinkIcon = require("@fortawesome/pro-duotone-svg-icons/faExternalLinkSquareAlt");
+  const { icon, toHtml } = require("@fortawesome/fontawesome-svg-core");
+  const parse5 = require("parse5");
+  const fromParse5 = require("hast-util-from-parse5");
+
+  const i = icon(faLinkIcon.faLink, { classes: "v-icon mr-2" });
+  const i2 = icon(faExternalLinkIcon.faExternalLinkSquareAlt, { classes: "" });
+
+  return {
+    linkIcon: fromParse5(parse5.parseFragment(toHtml(i.abstract[0]))),
+    externalLinkIcon: fromParse5(parse5.parseFragment(toHtml(i2.abstract[0]))),
+  };
+})();
+console.log(linkIcon);
+console.log(externalLinkIcon);
 
 const today = DateTime.fromJSDate(new Date(), { zone: FixedOffsetZone.utcInstance });
 
@@ -21,10 +39,10 @@ module.exports = {
   siteDescription,
   metadata: {
     author: {
-      username: 'David Driscoll',
-      firstName: 'David',
-      lastName: 'Driscoll',
-      twitter: '@david_dotnet'
+      username: "David Driscoll",
+      firstName: "David",
+      lastName: "Driscoll",
+      twitter: "@david_dotnet",
     },
     build: {
       today: today.toJSDate(),
@@ -205,9 +223,7 @@ module.exports = {
           description: node.description || "",
           link: "https://" + siteHostname + node.path,
           content: node.content,
-          author: [
-            { name: "David Driscoll", email: "david.driscoll@gmail.com" },
-          ],
+          author: [{ name: "David Driscoll", email: "david.driscoll@gmail.com" }],
         }),
       },
     },
@@ -233,17 +249,34 @@ module.exports = {
           },
         ],
       },
-    }
+    },
   ],
   templates: {
     // BlogPost: "/blog/:year/:month/:day/:title",
-    Tag: '/tags/:title'
+    Tag: "/tags/:title",
   },
   transformers: {
     remark: {
       plugins: [
-        [require('./code-highlighting'), { skipInline: true }],
-        ["gridsome-remark-figure-caption", {}],
+        [
+          "remark-external-links",
+          {
+            /*content: externalLinkIcon.children[0],             contentProperties: {}*/
+          },
+        ],
+        ["remark-slug", {}],
+        [
+          "remark-autolink-headings",
+          {
+            // behavior: 'wrap', //prepend append wrap before after
+            content: linkIcon,
+            linkProperties: { ariaHidden: true, tabIndex: -1, className: "anchor" },
+          },
+        ],
+        [require("./github-links"), { token: process.env.GITHUB_TOKEN || "" }],
+        [require("./code-highlighting"), { skipInline: true }],
+        ["remark-emoji", { emoticon: true }],
+        // ['remark-github', {}],
       ],
       // https://webstone.info/documentation/gridsome-plugin-remark-embed/
       /*
@@ -253,5 +286,5 @@ module.exports = {
              */
     },
   },
-  prefetch: { mask: '^$', },
+  prefetch: { mask: "^$" },
 };

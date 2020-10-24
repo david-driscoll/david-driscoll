@@ -131,7 +131,6 @@ import { faMoonStars } from "@fortawesome/pro-duotone-svg-icons/faMoonStars";
 import { faTags } from "@fortawesome/pro-duotone-svg-icons/faTags";
 import { faHatWitch } from "@fortawesome/pro-duotone-svg-icons/faHatWitch";
 import { faPodium } from "@fortawesome/pro-duotone-svg-icons/faPodium";
-import { faExternalLinkAlt } from "@fortawesome/pro-duotone-svg-icons/faExternalLinkAlt";
 import { faInfoCircle } from "@fortawesome/pro-duotone-svg-icons/faInfoCircle";
 import { faQuestionCircle } from "@fortawesome/pro-duotone-svg-icons/faQuestionCircle";
 import { faBlog } from "@fortawesome/pro-duotone-svg-icons/faBlog";

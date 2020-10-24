@@ -10,40 +10,18 @@
         <tag-cloud :tags="$page.topTags.edges.map((z) => z.node)" style="min-height: 20vw; max-height: 30vw; margin-bottom: 5em" />
       </v-col>
     </template>
-    <!-- Learn how to use images here: https://gridsome.org/docs/images -->
-    <g-image alt="Example image" src="~/favicon.png" width="135" />
 
-    <h1>Hello, world!</h1>
+    <v-sheet rounded="lg" min-height="30vh" elevation="2" class="pa-3">
+      <h1>Hello There!</h1>
 
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur excepturi labore tempore expedita, et iste tenetur suscipit explicabo! Dolores, aperiam non officia eos quod asperiores</p>
+      <p>Welcome to my little world!</p>
 
-    <p class="home-links">
-      <a href="https://gridsome.org/docs/" target="_blank" rel="noopener">Gridsome Docs</a>
-      <a href="https://github.com/gridsome/gridsome" target="_blank" rel="noopener">GitHub</a>
+      <p>I try to write things that are on my mind and document the things I do! <sub></sub></p>
 
-      <v-sheet color="primary" height="40" width="40"></v-sheet>
-      <v-sheet color="secondary" height="40" width="40"></v-sheet>
-      <v-sheet color="accent" height="40" width="40"></v-sheet>
-      <v-sheet color="error" height="40" width="40"></v-sheet>
-      <v-sheet color="warning" height="40" width="40"></v-sheet>
-      <v-sheet color="info" height="40" width="40"></v-sheet>
-      <v-sheet color="success" height="40" width="40"></v-sheet>
-      <br />
-
-      <!-- <v-card
-        v-for="edge in $page.posts.edges"
-        :key="edge.node.id"
-        :post="edge.node"
-        :to="edge.node.path"
-      >
-        {{ edge.node.title }}
-        {{ edge.node.date }}
-      </v-card> -->
-
-      <!-- <div v-for="edge in $page.series.edges" :key="edge.node.id" :post="edge.node">
-        {{edge.node.title}}
-      </div> -->
-    </p>
+      <p>Feel free to explore my blog, if you're interested in how it's built, the source is <a href="https://github.com/david-driscoll/daviddriscoll.me" target="_blank">here</a></p>
+      <p>Social links and other general stuff is at the bottom!</p>
+      Enjoy! :D
+    </v-sheet>
   </Layout>
 </template>
 
@@ -74,7 +52,7 @@ export default defineComponent({
     },
   },
   metaInfo() {
-    return this.$seo({ }, { title: 'Home' });
+    return this.$seo({}, { title: "Home" });
   },
 });
 </script>

@@ -12,10 +12,8 @@
         <slot name="left" v-if="hasLeft" />
 
         <v-col class="flex-shrink-0 flex-grow-1 order-first order-md-1">
-          <v-container :style="{ 'margin-top': overlay ? '-2vw' : '' }" :fluid="fluid" class="pa-0">
-            <v-sheet min-height="80vh" rounded="lg" elevation="2">
-              <slot />
-            </v-sheet>
+          <v-container :style="{ 'margin-top': overlay ? '-2vw' : '' }" :fluid="fluid" class="pa-2">
+            <slot />
           </v-container>
         </v-col>
 
