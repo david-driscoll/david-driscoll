@@ -52,6 +52,10 @@ function saveImage(key) {
  * @param {string} data.internal.typeName
  * @param {string} data.internal.origin
  * @param {number} data.internal.timestamp
+ * @param {string} data.fileInfo.name
+ * @param {string} data.fileInfo.path
+ * @param {string} data.fileInfo.extension
+ * @param {string} data.fileInfo.directory
  */
 function onBlogPost(data) {
   data.tags = data.tags || [];
@@ -65,6 +69,14 @@ function onBlogPost(data) {
 
   let now = DateTime.utc();
   data.isFuture = DateTime.fromJSDate(data.date) > now;
+
+  if (data.fileInfo.directory.includes('drafts')) {
+    console.log(process.env.NODE_ENV);
+    data.isFuture = process.env.NODE_ENV === 'production';
+    data.isDraft = true;
+  } else {
+    data.isDraft = false;
+  }
 
   var parts = data.internal.origin.split(/[\/|\\]/g);
   var series = parts.filter(part => part.startsWith("$series"));

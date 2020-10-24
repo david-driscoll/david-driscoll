@@ -114,6 +114,21 @@ module.exports = {
         },
       },
     },
+    {
+      use: "@gridsome/source-filesystem",
+      options: {
+        typeName: "BlogPost",
+        path: "./drafts/**/*.md",
+
+        refs: {
+          series: "Series",
+          tags: {
+            typeName: "Tag",
+            create: true,
+          },
+        },
+      },
+    },
 
     // {
     //   use: "@gridsome/source-filesystem",

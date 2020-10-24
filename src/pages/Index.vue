@@ -20,7 +20,7 @@
 
       <p>Feel free to explore my blog, if you're interested in how it's built, the source is <a href="https://github.com/david-driscoll/daviddriscoll.me" target="_blank">here</a></p>
       <p>Social links and other general stuff is at the bottom!</p>
-      Enjoy! :D
+      Enjoy! ╰(*°▽°*)╯
     </v-sheet>
   </Layout>
 </template>
