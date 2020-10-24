@@ -2,8 +2,8 @@
   "name": "david-driscoll",
   "private": true,
   "scripts": {
-    "build": "cross-env NODE_ENV=production gridsome build",
-    "build:local": "cross-env NODE_ENV=development gridsome build",
+    "build": "gridsome build",
+    "build:local": "gridsome build",
     "start": "nodemon --exec npm run develop",
     "develop": "gridsome develop",
     "explore": "gridsome explore",
