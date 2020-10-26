@@ -7,10 +7,12 @@ require("ts-node/register");
 // To restart press CTRL + C in terminal and run `gridsome develop`
 const { VuetifyLoaderPlugin } = require("vuetify-loader");
 const { DateTime, FixedOffsetZone } = require("luxon");
+const { default: slugify } = require("slugify");
 
 const siteName = "David Driscoll";
 const siteHostname = "www.daviddriscoll.me";
-const siteDescription = "Ramblings of a Software Developer";
+const siteDescription = "export type Blog = 'typescript' & '.net' & 'more'";
+// const siteDescription = "Ramblings of a Software Developer";
 
 const { linkIcon, externalLinkIcon } = (() => {
   const faLinkIcon = require("@fortawesome/pro-duotone-svg-icons/faLink");
@@ -51,6 +53,13 @@ module.exports = {
       day: today.day,
       monthOfYear: today.monthLong,
       dayOfWeek: today.toFormat("cccc"),
+    },
+  },
+
+  permalinks: {
+    slugify: function (text) {
+      // console.log("slugging", text);
+      return slugify(text, { strict: true });
     },
   },
 
@@ -272,21 +281,24 @@ module.exports = {
   },
   transformers: {
     remark: {
+      squeezeParagraphs: false,
+      externalLinks: false,
       plugins: [
+        [require("./blockquote"), {  }],
         ["remark-slug", {}],
-        [
-          "remark-autolink-headings",
-          {
-            // behavior: 'wrap', //prepend append wrap before after
-            content: linkIcon,
-            linkProperties: { ariaHidden: true, tabIndex: -1, className: "anchor" },
-          },
-        ],
+        // [
+        //   "remark-autolink-headings",
+        //   {
+        //     // behavior: 'wrap', //prepend append wrap before after
+        //     content: linkIcon,
+        //     linkProperties: { ariaHidden: true, tabIndex: -1, className: "anchor" },
+        //   },
+        // ],
         [
           require("remark-external-links"),
           {
             content: externalLinkIcon,
-            contentProperties: { ariaHidden: true, tabIndex: -1, className: "external-link" }
+            contentProperties: { ariaHidden: true, tabIndex: -1, className: "external-link" },
           },
         ],
         [require("./github-links"), { token: process.env.GITHUB_TOKEN || "" }],

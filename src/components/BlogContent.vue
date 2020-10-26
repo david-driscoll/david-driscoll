@@ -1,43 +1,21 @@
 <template>
-  <bg-image
-    :image="post.image.path"
-    :license="post.image.license"
-    position="top top"
-    size="contain"
-    class="pa-2"
-  >
-    <v-container
-      v-if="post.title || post.description"
-      style="min-height: 15vw"
-      class="d-flex justify-center align-center flex-column white--text"
-    >
+  <bg-image :image="post.image.path" :license="post.image.license" position="top top" size="contain" class="pa-2">
+    <v-container v-if="post.title || post.description" style="min-height: 15vw" class="d-flex justify-center align-center flex-column white--text">
       <g-link :to="post.path" class="white--text" v-if="linkTo">
         <h1 v-html="post.title" />
       </g-link>
       <h1 v-html="post.title" v-else />
-      <h3
-        class="text-body-1"
-        v-html="post.description"
-        v-if="post.description"
-      />
+      <h3 class="text-body-1" v-html="post.description" v-if="post.description" />
     </v-container>
 
     <v-container :fluid="fluid">
       <v-sheet rounded="lg">
         <v-card :min-height="minHeight" rounded="lg" class="d-flex align-top flex-column justify-space-between">
           <v-card-text class="block pa-0">
-            <posted-on
-              :date="post.date"
-              class="float-right rounded-tr rounded-bl-xl rounded-tl-0 ml-2"
-            />
-            <div v-html="post.content" class="pa-4" />
+            <posted-on :date="post.date" class="float-right rounded-tr rounded-bl-xl rounded-tl-0 ml-2" />
+            <div v-html="post.content" class="pa-4 content text-body-1" />
           </v-card-text>
-          <card-tags
-            class="accent"
-            color="primary"
-            v-if="post.tags && post.tags.length > 0"
-            :tags="post.tags"
-          />
+          <card-tags class="accent" color="primary" v-if="post.tags && post.tags.length > 0" :tags="post.tags" />
         </v-card>
       </v-sheet>
 
@@ -100,6 +78,20 @@ export default defineComponent({
 
 
 <style lang="scss">
+.content {
+  line-height: 2rem;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 3rem;
+    &:first-child {
+      margin-top: -1rem !important;
+    }
+  }
+}
 .license {
   top: 0;
   right: 0;

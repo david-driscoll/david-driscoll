@@ -15,5 +15,9 @@
     "vscode-graphql.showExecCodelens": true,
     "vscode-graphql.trace.server": "trace",
     "vscode-graphql.debug": true,
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "cSpell.words": [
+        "metaprogramming"
+    ]
+
 }

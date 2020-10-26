@@ -68,7 +68,7 @@ function onBlogPost(data) {
   }
 
   let now = DateTime.utc();
-  data.isFuture = DateTime.fromJSDate(data.date) > now;
+  data.isFuture = DateTime.fromJSDate(data.date) > now ? process.env.NODE_ENV === 'production' : false;
 
   if (data.fileInfo.directory.includes('$drafts')) {
     console.log(process.env.NODE_ENV);
@@ -165,15 +165,18 @@ module.exports = function(api) {
     if (data.date) {
       data.dateInfo = createDateInfo(data.date);
     }
+    // console.log('existing slug', data.slug)
     if (!data.slug) {
+      const options = { strict: true }
       if (data.title) {
-        data.slug = slugify(data.title).toLowerCase();
+        data.slug = slugify(data.title, options).toLowerCase();
       } else if (data.name) {
-        data.slug = slugify(data.name).toLowerCase();
+        data.slug = slugify(data.name, options).toLowerCase();
       } else {
-        data.slug = slugify(data.id).toLowerCase();
+        data.slug = slugify(data.id, options).toLowerCase();
       }
     }
+    console.log('update slug', data.slug)
   }
   function onPostCreateNode(data) {
     if (data.path && data.slug) {
