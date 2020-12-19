@@ -1,11 +1,15 @@
 // Server API makes it possible to hook into various parts of Gridsome
 // on server-side and add custom data to the GraphQL data layer.
 // Learn more: https://gridsome.org/docs/server-api/
-
+require("ts-node/register");
 const { default: slugify } = require("slugify");
 const nodeExternals = require("webpack-node-externals");
-const { DateTime } = require("luxon");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const { DateTime, FixedOffsetZone } = require("luxon");
 const trianglify = require("trianglify");
+const fs = require("fs");
+const { getImageContent, getImagePath } = require("./defaultImage");
+const { join } = require("path");
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
@@ -18,33 +22,22 @@ const colors = ["PuOr", "PRGn", "PiYG", "RdBu", "RdYlBu", "Spectral", "RdYlGn"];
 function ensureImage(data, key) {
   if (!data.image) data.image = { path: undefined };
   if (!data.image.path) {
-    const seed = mulberry32(key)() * colors.length;
-    const colorIndex = Math.floor(seed);
-    let localColors = trianglify.utils.colorbrewer[colors[colorIndex]];
-
-    const c = localColors
-      .slice(Math.floor(localColors.length / 2))
-      .concat(localColors.slice(0, Math.ceil(localColors.length / 2)));
-    console.log(
-      localColors,
-      Math.floor(localColors.length / 2),
-      Math.ceil(localColors.length / 2),
-      c
-    );
-    const image = trianglify({
-      width: 3840,
-      height: 960,
-      seed: key,
-      cellSize: 160,
-      xColors: c,
-      strokeWidth: 2,
-      variance: 0.44,
-    });
-    data.image.path = image.toSVG().toString();
-    data.image.path = `data:image/svg+xml;base64,${Buffer.from(
-      data.image.path
-    ).toString("base64")}`;
+    data.description = data.description || "";
+    data.image.path = saveImage(key);
   }
+
+  return data.image;
+}
+
+function saveImage(key) {
+  const content = getImageContent(key);
+  const file = fs.createWriteStream(join(__dirname, "static", getImagePath(key, "png")));
+  content
+    .toCanvas()
+    .createPNGStream()
+    .pipe(file);
+  fs.writeFileSync(join(__dirname, "static", getImagePath(key, "svg")), content.toSVGTree().toString());
+  return getImagePath(key);
 }
 
 /**
@@ -59,17 +52,34 @@ function ensureImage(data, key) {
  * @param {string} data.internal.typeName
  * @param {string} data.internal.origin
  * @param {number} data.internal.timestamp
+ * @param {string} data.fileInfo.name
+ * @param {string} data.fileInfo.path
+ * @param {string} data.fileInfo.extension
+ * @param {string} data.fileInfo.directory
  */
 function onBlogPost(data) {
-  data.tags = data.tags ?? [];
+  data.tags = data.tags || [];
+  data.description = data.description || "";
+  data.path = `/blog${data.dateInfo.path}${data.slug}`;
 
-  ensureImage(data, data.title);
+  ensureImage(data, data.title + data.dateInfo.path);
+  if (data.context && data.context.image) {
+    data.context.image = { ...data.image };
+  }
 
   let now = DateTime.utc();
-  data.isFuture = DateTime.fromJSDate(data.date) > now;
+  data.isFuture = DateTime.fromJSDate(data.date) > now ? process.env.NODE_ENV === 'production' : false;
+
+  if (data.fileInfo.directory.includes('$drafts')) {
+    console.log(process.env.NODE_ENV);
+    data.isFuture = process.env.NODE_ENV === 'production';
+    data.isDraft = true;
+  } else {
+    data.isDraft = false;
+  }
 
   var parts = data.internal.origin.split(/[\/|\\]/g);
-  var series = parts.filter((part) => part.startsWith("$series"));
+  var series = parts.filter(part => part.startsWith("$series"));
   if (series.length) {
     data.series = series[0].substring("$series".length);
     if (data.series.startsWith("-")) data.series = data.series.substring(1);
@@ -102,84 +112,171 @@ function onSeries(data) {
   // console.log(data);
 }
 
+/**
+ * @param {object} data
+ * @param {string} data.id
+ * @param {string} data.$uid
+ * @param {string} data.path
+ * @param {string} data.title
+ * @param {string} data.description
+ * @param {object} data.internal
+ * @param {string} data.internal.typeName
+ * @param {string} data.internal.origin
+ * @param {number} data.internal.timestamp
+ * @param {string} data.fileInfo.name
+ * @param {string} data.fileInfo.path
+ * @param {string} data.fileInfo.extension
+ * @param {string} data.fileInfo.directory
+ */
+function onTag(data) {
+  data.count = 1;
+  // console.log(data);
+}
+
 /** @type import('@tyankatsu0105/types-gridsome').Server */
 module.exports = function(api) {
-  const graphql = api.graphql;
-  api.loadSource((actions) => {
-    // Use the Data Store API here: https://gridsome.org/docs/data-store-api/
-    // console.log(
-    //   "// Use the Data Store API here: https://gridsome.org/docs/data-store-api/"
-    // );
-    // var items = actions.addCollection("BlogPost");
-    // console.log(items);
-    // const posts = actions.getCollection("BlogPost");
-    // posts.addReference("series", "Series");
-
+  api.loadSource(actions => {
     const blogs = actions.getCollection("BlogPost");
     const series = actions.getCollection("Series");
+    const tags = actions.getCollection("Tag");
     for (const item of series.data()) {
-      item.hasPosts = blogs.data().some((z) => z.series === item.id);
+      item.hasPosts = blogs.data().some(z => z.series === item.id);
       item.lastPost = item.hasPosts
         ? blogs
             .data()
-            .filter((z) => z.series === item.id)
-            .reduce(
-              (acc, v) => (acc.date > v.date ? acc.date : v.date),
-              new Date(0)
-            )
+            .filter(z => z.series === item.id)
+            .reduce((acc, v) => (acc.date > v.date ? acc.date : v.date), new Date(0))
         : null;
     }
 
-    // actions.addSchemaResolvers({
-    //   Series: {
-    //     hasPosts: {
-    //       type: "Boolean",
-    //       resolve(obj) {
-    //         // const items = actions.getCollection("Series");
-
-    //         // // console.log(Object.keys(items.constructor.prototype));
-    //         // console.log(items.data());
-    //         // blogs.data().some((z) => z.series === obj.id);
-    //         return blogs.data().some((z) => z.series === obj.id);
-    //       },
-    //     },
-    //   },
-    // });
-  });
-
-  function onCreateNode(data) {
-    // console.log(data);
-    if (!data.slug) {
-      if (data.title) {
-        data.slug = slugify(data.title).toLowerCase();
-      } else if (data.name) {
-        data.slug = slugify(data.name).toLowerCase();
-      }
-      if (data.path && data.slug) {
-        data.path = data.path.replace(/\/slug/g, "/" + data.slug);
+    const counts = {};
+    for (const item of blogs.data()) {
+      for (const tag of item.tags) {
+        counts[tag] = (counts[tag] || 0) + 1;
       }
     }
+    // console.log(counts);
+    for (const [key, value] of Object.entries(counts)) {
+      tags.getNodeById(key).count = value;
+    }
+  });
+
+  function onPreCreateNode(data) {
+    if (data.date) {
+      data.dateInfo = createDateInfo(data.date);
+    }
+    // console.log('existing slug', data.slug)
+    if (!data.slug) {
+      const options = { strict: true }
+      if (data.title) {
+        data.slug = slugify(data.title, options).toLowerCase();
+      } else if (data.name) {
+        data.slug = slugify(data.name, options).toLowerCase();
+      } else {
+        data.slug = slugify(data.id, options).toLowerCase();
+      }
+    }
+    console.log('update slug', data.slug)
   }
+  function onPostCreateNode(data) {
+    if (data.path && data.slug) {
+      data.path = data.path.replace(/\/slug/g, "/" + data.slug);
+    }
+    // console.log(data.internal.typeName);
+  }
+  api.onCreateNode(onPreCreateNode);
   api.onCreateNode(onTypeCreated("BlogPost", onBlogPost));
   api.onCreateNode(onTypeCreated("Series", onSeries));
-  api.onCreateNode(onCreateNode);
+  api.onCreateNode(onTypeCreated("Tag", onTag));
+  api.onCreateNode(onPostCreateNode);
+
+  api._app.pages.hooks.createPage.tap("Gridsome", page => {
+    if (page.path) {
+      // console.log(page);
+      page.context = page.context || {};
+      ensureImage(page.context, page.path);
+      page.context.image.width = 3840;
+      page.context.image.height = 960;
+      // ensureImage(page.context, page.path);
+    }
+    return page;
+  });
+
   // console.log(api);
-  api.chainWebpack((config, { isServer }) => {
+  api.chainWebpack((config, { isServer, isProd }) => {
     if (isServer) {
       config.externals([
         nodeExternals({
-          allowlist: [/^vuetify/],
-        }),
+          allowlist: [/^vuetify/]
+        })
       ]);
     }
-    // console.log(config.plugins);
-    // config.plugins.push(new VuetifyLoaderPlugin());
+    if (isProd) {
+      config.plugin("BundleAnalyzerPlugin").use(BundleAnalyzerPlugin, [{ analyzerMode: "static" }]);
+    }
   });
 
-  api.createPages(({ createPage, graphql }) => {
+  api.createPages(async ({ createPage, graphql, getCollection }) => {
+    const result = await graphql(`
+      #graphql
+      query {
+        posts: allBlogPost(sort: { by: "date", order: ASC }, filter: { isFuture: { ne: true } }) @paginate {
+          edges {
+            node {
+              id
+              title
+              date
+              path
+              slug
+              dateInfo {
+                day
+                month
+                year
+                path
+              }
+            }
+          }
+        }
+      }
+    `);
+
+    const edges = result.data.posts.edges;
+    for (let i = 0; i < edges.length; i++) {
+      const node = edges[i].node;
+      const prev = edges[i - 1];
+      const next = edges[i + 1];
+      const path = `/blog${node.dateInfo.path}${node.slug}`;
+      console.log(node.date, path);
+
+      // const imageData = {};
+      // ensureImage(imageData);
+
+      createPage({
+        path,
+        component: "./src/templates/blog/Post.vue",
+        context: {},
+        queryVariables: {
+          id: node.id,
+          prev: prev ? prev.node.id : null,
+          next: next ? next.node.id : null
+        }
+      });
+    }
+
     createPage({
       path: "/series/",
       component: "./src/templates/series/Summary.vue",
+      context: {}
+    });
+    createPage({
+      path: "/blog/",
+      component: "./src/templates/blog/List.vue",
+      context: {}
+    });
+    createPage({
+      path: "/tags/",
+      component: "./src/templates/tags/List.vue",
+      context: {}
     });
     // createPage({
     //   path: "/series/:id",
@@ -212,28 +309,16 @@ function onTypeCreated(typeName, fn) {
   }
 }
 
-function mulberry32(seed) {
-  if (!seed) {
-    seed = Math.random().toString(36);
-  } // support no-seed usage
-  var a = xmur3(seed)();
-  return function() {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    var t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function xmur3(str) {
-  for (var i = 0, h = 1779033703 ^ str.length; i < str.length; i++) {
-    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
-  }
-  return function() {
-    h = Math.imul(h ^ (h >>> 16), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    return (h ^= h >>> 16) >>> 0;
+function createDateInfo(value) {
+  const date = typeof value === "string" ? DateTime.fromISO(value, { zone: FixedOffsetZone.utcInstance }) : DateTime.fromJSDate(value, { zone: FixedOffsetZone.utcInstance });
+  const month = date.toFormat("MM");
+  const day = date.toFormat("dd");
+  const year = date.year.toString();
+  const path = `/${date.year}/${month}/${day}/`;
+  return {
+    day,
+    month,
+    year,
+    path
   };
 }

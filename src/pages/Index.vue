@@ -1,100 +1,27 @@
 <template>
-  <Layout
-    :image="image"
-    :title="$static.metadata.siteName"
-    :description="$static.metadata.siteDescription"
-    overlay
-  >
-    <!-- Learn how to use images here: https://gridsome.org/docs/images -->
-    <g-image alt="Example image" src="~/favicon.png" width="135" />
+  <Layout :image="image" size="contain" position="top" :title="$static.metadata.siteName" :description="$static.metadata.siteDescription" overlay>
+    <template v-slot:left>
+      <v-col cols="12" lg="3" xl="2" class="order-2 order-lg-1" style="margin-bottom: 10em">
+        <blog-card v-for="post in $page.recentPosts.edges" :key="post.node.id" :post="post.node" />
+      </v-col>
+    </template>
+    <template v-slot:right>
+      <v-col cols="12" lg="2" class="order-2 order-lg-3" style="margin-top: -10em">
+        <tag-cloud :tags="$page.topTags.edges.map((z) => z.node)" style="min-height: 20vw; max-height: 30vw; margin-bottom: 5em" />
+      </v-col>
+    </template>
 
-    <h1>Hello, world!</h1>
+    <v-sheet rounded="lg" min-height="30vh" elevation="2" class="pa-3">
+      <h1>Hello There!</h1>
 
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur
-      excepturi labore tempore expedita, et iste tenetur suscipit explicabo!
-      Dolores, aperiam non officia eos quod asperiores
-    </p>
+      <p>Welcome to my little world!</p>
 
-    <p class="home-links">
-      <a href="https://gridsome.org/docs/" target="_blank" rel="noopener"
-        >Gridsome Docs</a
-      >
-      <a
-        href="https://github.com/gridsome/gridsome"
-        target="_blank"
-        rel="noopener"
-        >GitHub</a
-      >
+      <p>I try to write things that are on my mind and document the things I do! <sub></sub></p>
 
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-
-      <v-card
-        v-for="edge in $page.posts.edges"
-        :key="edge.node.id"
-        :post="edge.node"
-        :to="edge.node.path"
-      >
-        {{ edge.node.title }}
-      </v-card>
-
-      <!-- <div v-for="edge in $page.series.edges" :key="edge.node.id" :post="edge.node">
-        {{edge.node.title}}
-      </div> -->
-    </p>
+      <p>Feel free to explore my blog, if you're interested in how it's built, the source is <a href="https://github.com/david-driscoll/daviddriscoll.me" target="_blank">here</a></p>
+      <p>Social links and other general stuff is at the bottom!</p>
+      Enjoy! ╰(*°▽°*)╯
+    </v-sheet>
   </Layout>
 </template>
 
@@ -107,17 +34,25 @@ query {
 }
 </static-query>
 
-<script>
+<script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import { getImage } from "../defaultImage";
+import Layout from "../layouts/Default.vue";
+import BlogCard from "../components/BlogCard.vue";
+import TagCloud from "../components/TagCloud.vue";
 export default defineComponent({
+  components: { BlogCard, Layout, TagCloud },
   setup() {
-    return {
-      image: getImage("App"),
-    };
+    // return {
+    //   image: getImage("App"),
+    // };
   },
-  metaInfo: {
-    title: "Hello, world!",
+  computed: {
+    image() {
+      return (this.$context as any).image.path;
+    },
+  },
+  metaInfo() {
+    return this.$seo({}, { title: "Home" });
   },
 });
 </script>
@@ -129,14 +64,36 @@ export default defineComponent({
 </style>
 
 <page-query>
-query ($page: Int) {
-  posts: allBlogPost(perPage: 5, page: $page, sort: { by:"date", order: DESC }, filter: { isFuture:{ne: true} }) @paginate {
+query {
+  recentPosts: allBlogPost(
+    limit: 3
+    sort: { by: "date", order: DESC }
+    filter: { isFuture: { eq: false } }
+  ) {
+    totalCount
+    edges {
+      node {
+        id
+        path
+        title
+        description
+        timeToRead
+        date
+        image {
+          path
+        }
+      }
+    }
+  }
+  #topTags: allTag(limit: 10, sort: { by: "count", order: DESC }) {
+  topTags: allTag(sort: { by: "count", order: DESC }) {
     edges {
       node {
         id
         title
-        date (format: "dddd, MMMM D YYYY")
         path
+        slug
+        count
       }
     }
   }

@@ -12,12 +12,14 @@ query {
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
+import Layout from "../../layouts/Default.vue";
 export default defineComponent({
+  components: { Layout },
   setup() {
     return {};
   },
-  metaInfo: {
-    title: "Series",
+  metaInfo() {
+    return this.$seo({ title: "Series" }, {});
   },
 });
 </script>

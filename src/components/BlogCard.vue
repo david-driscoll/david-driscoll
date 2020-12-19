@@ -1,134 +1,72 @@
 <template>
-  <v-card class="mx-auto" max-width="800px">
-    <v-img
-      contain
-      :src="series.image.path"
-      min-height="200px"
-      class="align-end secondary--text"
-    >
-      <div
-        class="license rounded-bl-xl"
-        :class="{ white: !$vuetify.theme.dark, black: $vuetify.theme.dark }"
-      >
-        <license v-if="series.image.license" :license="series.image.license" />
-      </div>
-      <g-link :to="series.path">
-        <v-card-title
-          :class="{
-            'white--text': true,
-            'rounded-tr-xl': true,
-            'deep-purple': true,
-            'darken-4': false,
-            'accent-2': false,
-          }"
-          style="width: fit-content"
-        >
-          {{ series.title }}
-        </v-card-title>
-      </g-link>
-    </v-img>
-
-    <v-card-subtitle> {{ series.description }} </v-card-subtitle>
-    <v-card-text>
-      <v-timeline dense>
-        <v-timeline-item
-          v-for="(post, i) in posts.slice(0, visiblePosts)"
-          :key="post.id"
-          :color="post.isFuture ? 'grey' : ''"
-          small
-        >
-          <template v-slot:icon>
-            <span class="font-weight-bold">{{ i + 1 }}</span>
-          </template>
-          <v-card
-            :to="!post.isFuture ? post.path : ''"
-            :color="'deep-purple'"
-            :class="{
-              'white--text': true,
-              'rounded-a-xl': true,
-              'deep-purple': true,
-              'darken-4': false,
-              'accent-2': false,
-            }"
-          >
-            <v-card-title> {{ post.title }} </v-card-title>
-            <v-card-subtitle
-              :class="{
-                'white--text': true,
-              }"
-            >
-              <sup>{{ toDisplayDate(post.date) }}</sup>
-              <span v-if="post.description"><br />{{ post.description }}</span>
-            </v-card-subtitle>
-          </v-card>
-        </v-timeline-item>
-
-        <v-card-actions>
-          <div
-            class="flex-grow-1 transparent"
-            style="margin-top: -4em; margin-left: 1.6em"
-          >
-            <v-btn icon @click="show = !show" color="white" class="primary">
-              <fa-icon :icon="show ? $icons.chevronUp : $icons.chevronDown" />
-            </v-btn>
-          </div>
-          <v-spacer />
-        </v-card-actions>
-        <v-expand-transition>
-          <div v-show="show">
-            <v-timeline-item
-              v-for="(post, i) in posts.slice(visiblePosts)"
-              :key="post.id"
-              :color="post.isFuture ? 'grey' : ''"
-              small
-            >
-              <template v-slot:icon>
-                <span class="font-weight-bold">{{ i + 1 + visiblePosts }}</span>
-              </template>
-              <v-card
-                :color="'deep-purple'"
-                :to="!post.isFuture ? post.path : ''"
-                :class="{
-                  'white--text': true,
-                  'rounded-a-xl': true,
-                  'deep-purple': true,
-                  'darken-4': false,
-                  'accent-2': false,
-                }"
-              >
-                <v-card-title> {{ post.title }} </v-card-title>
-                <v-card-subtitle
-                  :class="{
-                    'white--text': true,
-                  }"
-                >
-                  <sup>{{ toDisplayDate(post.date) }}</sup>
-                  <span v-if="post.description"
-                    ><br />{{ post.description }}</span
-                  >
-                </v-card-subtitle>
-              </v-card>
-            </v-timeline-item>
-          </div>
-        </v-expand-transition>
-      </v-timeline>
-    </v-card-text>
+  <v-card class="ma-4" :to="post.path">
+    <g-image :src="post.image.path" class="title-image" />
+    <posted-on
+      :date="post.date"
+      scale="0.6"
+      :style="{
+        right: datePosition === 'right' ? 0 : undefined,
+        left: datePosition === 'left' ? 0 : undefined,
+      }"
+      :class="{
+        'rounded-tl-lg': datePosition === 'right',
+        'rounded-tr-lg': datePosition === 'left',
+      }"
+    />
+    <v-card-title v-html="post.title" />
+    <v-card-subtitle v-if="post.description" v-html="post.description"></v-card-subtitle>
+    <v-card-subtitle v-if="post.series && post.series.title">
+      Series: {{ post.series.title }}
+      &nbsp;
+    </v-card-subtitle>
+    <card-tags v-if="post.tags && post.tags.length > 0" :tags="post.tags" class="primary" color="secondary" />
   </v-card>
 </template>
 
+<style lang="scss" scoped>
+.title-image {
+  height: 6em;
+  object-fit: cover;
+  width: 100%;
+  object-position: center;
+}
+.posted-on {
+  position: absolute;
+  top: 6em - 4.8em;
+}
+</style>
+
 <script lang="ts">
 import License from "./License.vue";
+import Default from "../layouts/Default.vue";
 import { defineComponent, ref, PropType } from "@vue/composition-api";
 import { DateTime } from "luxon";
-import { useImage } from "../defaultImage";
+import PostedOn from "./PostedOn.vue";
+import CardTags from "./CardTags.vue";
+import BgImage from "./BgImage.vue";
 export default defineComponent({
   props: {
-    series: {
+    datePosition: {
+      type: String as PropType<"right" | "left">,
+      default: "right",
+      required: false,
+      validator(value) {
+        return value === "right" || value === "left";
+      },
+    },
+    post: {
       type: Object as PropType<{
         id: string;
         path: string;
         title: string;
         description: string;
+        series: {
+          title: string;
+        };
+        tags: {
+          title: string;
+          path: string;
+        }[];
         image: {
           path: string;
           license?: {
@@ -140,30 +78,9 @@ export default defineComponent({
       }>,
       required: true,
     },
-    posts: {
-      type: Array as PropType<
-        {
-          id: string;
-          path: string;
-          title: string;
-          description: string;
-          date: string;
-        }[]
-      >,
-      required: true,
-    },
   },
-  components: { License },
-  methods: {
-    toDisplayDate(date: Date | string) {
-      const dt =
-        typeof date === "string"
-          ? DateTime.fromISO(date)
-          : DateTime.fromJSDate(date);
-      return dt.toUTC().toLocaleString(DateTime.DATE_HUGE);
-    },
-  },
-  setup(props, context) {
+  components: { License, PostedOn, Default, BgImage, CardTags },
+  setup(props: any, context: any) {
     return {
       show: ref(false),
       visiblePosts: 2,
@@ -171,13 +88,3 @@ export default defineComponent({
   },
 });
 </script>
-
-
-<style lang="scss" scoped>
-.license {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.25em 0.25em 0.5em 0.5em;
-}
-</style>

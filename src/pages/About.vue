@@ -1,23 +1,35 @@
 <template>
-  <Layout>
-    <h1>About us</h1>
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error doloremque
-      omnis animi, eligendi magni a voluptatum, vitae, consequuntur rerum illum
-      odit fugit assumenda rem dolores inventore iste reprehenderit maxime!
-      Iusto.
-    </p>
+  <Layout :image="image" :title="'About'">
+    <v-sheet rounded="lg" min-height="30vh" elevation="2" class="pa-3">
+      <p>
+        Hello there, welcome to my blog, I hope you
+      </p>
+    </v-sheet>
+    <template v-slot:description> custom desc asdf </template>
   </Layout>
 </template>
 
 <script>
 import { defineComponent } from "@vue/composition-api";
+import Layout from "../layouts/Default.vue";
 export default defineComponent({
+  components: { Layout },
+  computed: {
+    image() {
+      // if (this.$vuetify.theme.dark) return '/pages/about.png';
+      return this.$context.image.path;
+    },
+  },
   setup() {
     return {};
   },
-  metaInfo: {
-    title: "About us",
+  metaInfo() {
+    return this.$seo(
+      {
+        title: "About",
+      },
+      {}
+    );
   },
 });
 </script>
