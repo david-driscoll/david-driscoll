@@ -87,9 +87,11 @@ export default defineComponent({
   h5,
   h6 {
     line-height: 3rem;
-    &:first-child {
-      margin-top: -1rem !important;
-    }
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    // &:first-child {
+    //   // margin-top: -1rem !important;
+    // }
   }
 }
 .license {

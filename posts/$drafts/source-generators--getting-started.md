@@ -35,12 +35,9 @@ With Source Generators you can...
 * generate dependency injection configuration
 * generate `IPropertyNotifyChanged` for a given class
 
-
-
 # Creating a Source Generator
 
 Creating a source generator is similar to a Roslyn Analyzer, with some interesting differences.
-
 
 # Unit Testing a Source Generator
 

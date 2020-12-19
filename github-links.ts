@@ -38,8 +38,7 @@ module.exports = function githubPermalinksPlugin({ token = "" } = {}) {
           path,
           ref,
         });
-        content.data.type;
-        return Buffer.from(content.data.content, "base64")
+        return Buffer.from((content.data as any).content, "base64")
           .toString()
           .split("\n")
           .slice(firstLineIndex, firstLineIndex + numOfLines)
