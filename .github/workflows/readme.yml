@@ -13,12 +13,12 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: gautamkrishnar/blog-post-workflow@master
-        with:
-          # feed_list: "https://www.daviddriscoll.me/feed.xml"
-          feed_list: ""
-          readme_path: ./TEMPLATE.md
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: gautamkrishnar/blog-post-workflow@master
+      #   with:
+      #     # feed_list: "https://www.daviddriscoll.me/feed.xml"
+      #     feed_list: ""
+      #     readme_path: ./TEMPLATE.md
+      #     gh_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create README.md
         uses: actions-js/profile-readme@master
         with:
