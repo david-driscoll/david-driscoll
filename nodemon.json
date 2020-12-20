@@ -1,7 +1,0 @@
-{
-  "ignore": [".git", "src", "dist"],
-  "env": {
-    "NODE_ENV": "development"
-  },
-  "ext": "js,json,ts"
-}
