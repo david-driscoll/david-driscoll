@@ -42,9 +42,11 @@ module.exports = {
   metadata: {
     author: {
       username: "David Driscoll",
+      name: "David Driscoll",
       firstName: "David",
       lastName: "Driscoll",
       twitter: "@david_dotnet",
+      email: "david.driscoll@gmail.com"
     },
     build: {
       today: today.toJSDate(),
@@ -183,72 +185,6 @@ module.exports = {
             priority: 0.5,
           },
         },
-      },
-    },
-
-    {
-      use: "@microflash/gridsome-plugin-feed",
-      options: {
-        // (required) Provide GraphQL collection types
-        contentTypes: ["BlogPost"],
-
-        // (optional) Properties used by feed API
-        // See https://github.com/jpmonette/feed#example for all options
-        feedOptions: {
-          title: siteName + " Blog",
-          description: siteDescription,
-          // image: "http://example.com/image.png",
-          // favicon: "http://example.com/favicon.ico",
-          // copyright: "All rights reserved 2013, John Doe",
-          // author: {
-          //   name: "John Doe",
-          //   email: "johndoe@example.com",
-          //   link: "https://example.com/johndoe"
-          // }
-        },
-
-        // Available options with their default values
-
-        // (optional) Options for feed formats
-        // RSS is enabled by default
-        rss: {
-          enabled: true,
-          output: "/feed.xml",
-        },
-        atom: {
-          enabled: true,
-          output: "/feed.atom",
-        },
-        json: {
-          enabled: true,
-          output: "/feed.json",
-        },
-
-        // (optional) number of items to include in a feed
-        maxItems: 100,
-
-        // (optional) an array of properties to be parsed as HTML
-        // Converts relative URLs to absolute URLs
-        // You can disable this by omitting the option
-        htmlFields: ["content"],
-
-        // (optional) appends a trailing slash to the URLs
-        enforceTrailingSlashes: false,
-
-        // (optional) a function to filter out the nodes
-        // e.g., filter out all outdated posts, filterNodes: (node) => !!node.outdated
-        filterNodes: (node) => true,
-
-        // (optional) sets the properties on each feed item
-        // See https://github.com/jpmonette/feed#example for all options
-        nodeToFeedItem: (node) => ({
-          title: node.title,
-          date: node.date,
-          description: node.description || "",
-          link: "https://" + siteHostname + node.path,
-          content: node.content,
-          author: [{ name: "David Driscoll", email: "david.driscoll@gmail.com" }],
-        }),
       },
     },
 

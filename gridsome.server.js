@@ -10,6 +10,7 @@ const trianglify = require("trianglify");
 const fs = require("fs");
 const { getImageContent, getImagePath } = require("./defaultImage");
 const { join } = require("path");
+const { exportFeeds } = require('./feed')
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
@@ -134,7 +135,7 @@ function onTag(data) {
 }
 
 /** @type import('@tyankatsu0105/types-gridsome').Server */
-module.exports = function(api) {
+module.exports = function(api, options) {
   api.loadSource(actions => {
     const blogs = actions.getCollection("BlogPost");
     const series = actions.getCollection("Series");
@@ -211,9 +212,9 @@ module.exports = function(api) {
         })
       ]);
     }
-    if (isProd) {
-      config.plugin("BundleAnalyzerPlugin").use(BundleAnalyzerPlugin, [{ analyzerMode: "static" }]);
-    }
+    // if (isProd) {
+    //   config.plugin("BundleAnalyzerPlugin").use(BundleAnalyzerPlugin, [{ analyzerMode: "static" }]);
+    // }
   });
 
   api.createPages(async ({ createPage, graphql, getCollection }) => {
@@ -283,6 +284,8 @@ module.exports = function(api) {
     //   component: "./src/templates/series/Index.vue",
     // });
   });
+
+  exportFeeds(api, options);
 };
 
 /**
